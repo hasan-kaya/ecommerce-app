@@ -18,7 +18,9 @@ services:
     ports: ["4000:4000"]
     volumes:
       - ./monolith-api:/app
-      - /app/node_modules
+      - monolith-api-node-modules:/app/node_modules
+    env_file:
+      - ./monolith-api/.env
     environment:
       NODE_ENV: development
 
@@ -28,7 +30,12 @@ services:
     ports: ["3000:3000"]
     volumes:
       - ./web-client:/app
-      - /app/node_modules
-      - /app/.next
+      - web-client-node-modules:/app/node_modules
+      - web-client-next:/app/.next
     environment:
       NODE_ENV: development
+
+volumes:
+  monolith-api-node-modules:
+  web-client-node-modules:
+  web-client-next:
