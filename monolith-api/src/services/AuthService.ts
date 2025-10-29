@@ -2,6 +2,7 @@ import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { User } from '@/entities/User';
 import { UserRepository } from '@/repositories/UserRepository';
+import { AppError } from '@/common/middleware/error';
 
 export class AuthService {
   private userRepository = new UserRepository();
@@ -12,7 +13,7 @@ export class AuthService {
   async register(email: string, name: string, password: string) {
     const existingUser = await this.userRepository.findByEmail(email);
     if (existingUser) {
-      throw new Error('User already exists');
+      throw new AppError('User already exists');
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -34,12 +35,12 @@ export class AuthService {
   async login(email: string, password: string) {
     const user = await this.userRepository.findByEmail(email);
     if (!user) {
-      throw new Error('Invalid credentials');
+      throw new AppError('Invalid credentials', 401);
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
-      throw new Error('Invalid credentials');
+      throw new AppError('Invalid credentials', 401);
     }
 
     const tokens = this.generateTokens(user);
@@ -56,7 +57,7 @@ export class AuthService {
       
       const user = await this.userRepository.findById(decoded.userId);
       if (!user) {
-        throw new Error('User not found');
+        throw new AppError('User not found', 404);
       }
 
       const tokens = this.generateTokens(user);
@@ -66,14 +67,14 @@ export class AuthService {
         ...tokens,
       };
     } catch (error) {
-      throw new Error('Invalid refresh token');
+      throw new AppError('Invalid refresh token');
     }
   }
 
   async me(userId: string) {
     const user = await this.userRepository.findById(userId);
     if (!user) {
-      throw new Error('User not found');
+      throw new AppError('User not found');
     }
 
     return this.sanitizeUser(user);
@@ -118,7 +119,7 @@ export class AuthService {
     try {
       return jwt.verify(token, this.JWT_SECRET) as { userId: string; email: string };
     } catch (error) {
-      throw new Error('Invalid token');
+      throw new AppError('Invalid token');
     }
   }
 }

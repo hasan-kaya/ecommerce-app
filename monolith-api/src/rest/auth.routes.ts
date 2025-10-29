@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
 import { AuthService } from '@/services/AuthService';
-import { registerSchema, loginSchema, refreshTokenSchema } from '@/auth/validators';
+import { registerSchema, loginSchema, refreshTokenSchema } from '@/validators/auth.validators';
 import { authenticate, AuthRequest } from '@/auth/middleware';
 import { asyncHandler } from '@/common/middleware/error';
 import { sendSuccess } from '@/common/utils/response';
