@@ -2,11 +2,12 @@ import 'reflect-metadata';
 import 'tsconfig-paths/register';
 import express from 'express';
 import { AppDataSource } from '@/config/data-source';
+import { errorHandler } from '@/common/middleware/error';
 import authRoutes from '@/rest/auth.routes';
 import categoryRoutes from '@/rest/category.routes';
 import productRoutes from '@/rest/product.routes';
 import cartRoutes from '@/rest/cart.routes';
-import { errorHandler } from '@/common/middleware/error';
+import walletRoutes from '@/rest/wallet.routes';
 
 const app = express();
 const PORT = Number(process.env.PORT) || 4000;
@@ -19,6 +20,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
+app.use('/api/wallets', walletRoutes);
 
 // Error handler
 app.use(errorHandler);
