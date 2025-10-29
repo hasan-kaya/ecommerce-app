@@ -4,6 +4,7 @@ import express from 'express';
 import { AppDataSource } from '@/config/data-source';
 import authRoutes from '@/rest/auth.routes';
 import categoryRoutes from '@/rest/category.routes';
+import productRoutes from '@/rest/product.routes';
 import { errorHandler } from '@/common/middleware/error';
 
 const app = express();
@@ -14,7 +15,8 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/categories', categoryRoutes)
+app.use('/api/categories', categoryRoutes);
+app.use('/api/products', productRoutes);
 
 // Error handler
 app.use(errorHandler);
@@ -34,4 +36,3 @@ const startServer = async () => {
 };
 
 startServer();
-  
