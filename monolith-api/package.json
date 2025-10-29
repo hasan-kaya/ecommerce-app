@@ -7,8 +7,8 @@
     "dev": "nodemon app.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "typeorm": "ts-node ./node_modules/typeorm/cli.js",
-    "migration:generate": "npm run typeorm -- migration:generate -d src/config/data-source.ts",
-    "migration:create": "npm run typeorm -- migration:create",
+    "migration:generate": "npm run typeorm -- migration:generate -d src/config/data-source.ts migrations/$npm_config_name",
+    "migration:create": "npm run typeorm -- migration:create migrations/$npm_config_name",
     "migration:run": "npm run typeorm -- migration:run -d src/config/data-source.ts",
     "migration:revert": "npm run typeorm -- migration:revert -d src/config/data-source.ts",
     "migration:show": "npm run typeorm -- migration:show -d src/config/data-source.ts"
