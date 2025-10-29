@@ -10,7 +10,11 @@ const productService = new ProductService();
 router.get(
   '/',
   asyncHandler(async (req: Request, res: Response) => {
-    const products = await productService.getAllProducts();
+    const { category, search } = req.query;
+    const products = await productService.getAllProducts(
+      category as string | undefined,
+      search as string | undefined
+    );
     return sendSuccess(res, products);
   })
 );
