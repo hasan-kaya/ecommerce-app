@@ -1,12 +1,7 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
-import { Product } from './Product';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+
 import { Cart } from './Cart';
+import { Product } from './Product';
 
 @Entity('cart_items')
 export class CartItem {

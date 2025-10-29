@@ -1,12 +1,13 @@
 import 'reflect-metadata';
 import 'tsconfig-paths/register';
 import express from 'express';
-import { AppDataSource } from '@/config/data-source';
+
 import { errorHandler } from '@/common/middleware/error';
+import { AppDataSource } from '@/config/data-source';
 import authRoutes from '@/rest/auth.routes';
+import cartRoutes from '@/rest/cart.routes';
 import categoryRoutes from '@/rest/category.routes';
 import productRoutes from '@/rest/product.routes';
-import cartRoutes from '@/rest/cart.routes';
 import walletRoutes from '@/rest/wallet.routes';
 
 const app = express();

@@ -10,16 +10,21 @@ export interface ApiResponse<T = any> {
 export const sendSuccess = <T>(res: Response, data: T, statusCode: number = 200) => {
   const response: ApiResponse<T> = {
     success: true,
-    data
+    data,
   };
   return res.status(statusCode).json(response);
 };
 
-export const sendError = (res: Response, message: string, statusCode: number = 500, details?: any) => {
+export const sendError = (
+  res: Response,
+  message: string,
+  statusCode: number = 500,
+  details?: any
+) => {
   const response: ApiResponse = {
     success: false,
     error: message,
-    ...(details && { details })
+    ...(details && { details }),
   };
   return res.status(statusCode).json(response);
 };

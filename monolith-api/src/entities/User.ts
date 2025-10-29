@@ -1,13 +1,8 @@
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  CreateDateColumn,
-  OneToMany,
-} from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, OneToMany } from 'typeorm';
+
 import { Cart } from './Cart';
-import { Wallet } from './Wallet';
 import { Order } from './Order';
+import { Wallet } from './Wallet';
 
 @Entity('users')
 export class User {

@@ -1,7 +1,8 @@
-import { Router, Request, Response } from 'express';
+import { Router, Response } from 'express';
+
+import { authenticate, AuthRequest } from '@/auth/middleware';
 import { asyncHandler } from '@/common/middleware/error';
 import { sendSuccess } from '@/common/utils/response';
-import { authenticate, AuthRequest } from '@/auth/middleware';
 import { CartService } from '@/services/CartService';
 import { addToCartSchema } from '@/validators/cart.validators';
 

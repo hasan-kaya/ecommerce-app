@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { ZodError } from 'zod';
+
 import { sendError } from '../utils/response';
 
 export class AppError extends Error {
@@ -16,7 +17,7 @@ export const errorHandler = (
   error: Error | AppError | ZodError,
   req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
   if (error instanceof ZodError) {
     return sendError(res, 'Validation error', 400, error.errors);
@@ -30,7 +31,9 @@ export const errorHandler = (
   return sendError(res, 'Internal server error', 500);
 };
 
-export const asyncHandler = (fn: Function) => {
+export const asyncHandler = (
+  fn: (req: Request, res: Response, next: NextFunction) => Promise<unknown>
+) => {
   return (req: Request, res: Response, next: NextFunction) => {
     Promise.resolve(fn(req, res, next)).catch(next);
   };

@@ -7,15 +7,8 @@ export class WalletService {
     return this.walletRepository.findByUserId(userId);
   }
 
-  public async topUpUserWallet(
-    userId: string,
-    currency: string,
-    amountMinor: number
-  ) {
-    let wallet = await this.walletRepository.findByUserIdAndCurrency(
-      userId,
-      currency
-    );
+  public async topUpUserWallet(userId: string, currency: string, amountMinor: number) {
+    let wallet = await this.walletRepository.findByUserIdAndCurrency(userId, currency);
     if (!wallet) {
       wallet = await this.walletRepository.createWallet(userId, currency);
     }

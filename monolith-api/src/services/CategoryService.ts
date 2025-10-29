@@ -1,9 +1,9 @@
-import { CategoryRepository } from "@/repositories/CategoryRepository";
+import { CategoryRepository } from '@/repositories/CategoryRepository';
 
-export class CategoryService{
+export class CategoryService {
   private categoryRepository = new CategoryRepository();
 
-  async getAllCategories(){
+  async getAllCategories() {
     return this.categoryRepository.findAll();
   }
 }

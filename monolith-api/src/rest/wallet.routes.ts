@@ -1,8 +1,9 @@
 import { Router, Response } from 'express';
-import { sendSuccess } from '@/common/utils/response';
-import { asyncHandler } from '@/common/middleware/error';
-import { WalletService } from '@/services/WalletService';
+
 import { authenticate, AuthRequest } from '@/auth/middleware';
+import { asyncHandler } from '@/common/middleware/error';
+import { sendSuccess } from '@/common/utils/response';
+import { WalletService } from '@/services/WalletService';
 import { walletTopUpSchema } from '@/validators/wallet.validators';
 
 const router = Router();

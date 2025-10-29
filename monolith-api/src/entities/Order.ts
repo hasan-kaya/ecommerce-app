@@ -7,8 +7,9 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { User } from './User';
+
 import { OrderItem } from './OrderItem';
+import { User } from './User';
 
 export enum OrderStatus {
   PENDING = 'pending',

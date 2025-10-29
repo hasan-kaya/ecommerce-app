@@ -9,9 +9,7 @@ export class CartService {
       cart = await this.cartRepository.createCart(userId);
     }
 
-    const existingItem = cart.cartItems.find(
-      (ci) => ci.product.id === productId
-    );
+    const existingItem = cart.cartItems.find((ci) => ci.product.id === productId);
     if (existingItem) {
       existingItem.qty += qty;
       return this.cartRepository.saveCartItem(existingItem);

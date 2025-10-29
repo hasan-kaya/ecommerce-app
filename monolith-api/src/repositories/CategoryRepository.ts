@@ -1,10 +1,10 @@
-import { AppDataSource } from "@/config/data-source";
-import { Category } from "@/entities/Category";
+import { AppDataSource } from '@/config/data-source';
+import { Category } from '@/entities/Category';
 
-export class CategoryRepository{
+export class CategoryRepository {
   private repository = AppDataSource.getRepository(Category);
 
-  async findAll(){
+  async findAll() {
     return this.repository.find();
   }
 }

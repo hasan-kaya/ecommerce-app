@@ -8,10 +8,7 @@ export class WalletRepository {
     return this.repository.find({ where: { user: { id: userId } } });
   }
 
-  public async findByUserIdAndCurrency(
-    userId: string,
-    currency: string
-  ): Promise<Wallet | null> {
+  public async findByUserIdAndCurrency(userId: string, currency: string): Promise<Wallet | null> {
     return this.repository.findOne({
       where: { user: { id: userId }, currency },
     });
