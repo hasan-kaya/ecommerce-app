@@ -1,25 +1,35 @@
 import 'reflect-metadata';
-import express, { Request, Response } from 'express';
-import { AppDataSource } from './src/config/data-source';
+import 'tsconfig-paths/register';
+import express from 'express';
+import { AppDataSource } from '@/config/data-source';
+import authRoutes from '@/rest/auth.routes';
+import { errorHandler } from '@/common/middleware/error';
 
 const app = express();
-const port: number = Number(process.env.PORT) || 4000;
+const PORT = Number(process.env.PORT) || 4000;
 
+// Middleware
 app.use(express.json());
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Hello World!');
-});
+// Routes
+app.use('/api/auth', authRoutes);
 
-AppDataSource.initialize()
-  .then(() => {
+// Error handler
+app.use(errorHandler);
+
+const startServer = async () => {
+  try {
+    await AppDataSource.initialize();
     console.log('Database connection established');
-    
-    app.listen(port, () => {
-      console.log(`Server is running on port ${port}`);
+
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
     });
-  })
-  .catch((error) => {
+  } catch (error) {
     console.error('Database connection failed:', error);
     process.exit(1);
-  });
+  }
+};
+
+startServer();
+  
