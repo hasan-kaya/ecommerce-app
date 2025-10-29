@@ -5,6 +5,7 @@ import { AppDataSource } from '@/config/data-source';
 import authRoutes from '@/rest/auth.routes';
 import categoryRoutes from '@/rest/category.routes';
 import productRoutes from '@/rest/product.routes';
+import cartRoutes from '@/rest/cart.routes';
 import { errorHandler } from '@/common/middleware/error';
 
 const app = express();
@@ -17,6 +18,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/products', productRoutes);
+app.use('/api/cart', cartRoutes);
 
 // Error handler
 app.use(errorHandler);
