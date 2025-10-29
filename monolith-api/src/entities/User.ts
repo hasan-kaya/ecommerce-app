@@ -6,6 +6,7 @@ import {
   OneToMany,
 } from 'typeorm';
 import { Cart } from './Cart';
+import { Wallet } from './Wallet';
 
 @Entity('users')
 export class User {
@@ -26,4 +27,7 @@ export class User {
 
   @OneToMany(() => Cart, (cart) => cart.user)
   carts!: Cart[];
+
+  @OneToMany(() => Wallet, (wallet) => wallet.user)
+  wallets!: Wallet[];
 }
