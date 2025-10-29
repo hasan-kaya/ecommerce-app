@@ -3,9 +3,11 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Category } from './Category';
+import { CartItem } from './CartItem';
 
 @Entity('products')
 export class Product {
@@ -33,4 +35,7 @@ export class Product {
 
   @Column('int', { default: 0 })
   stock_qty!: number;
+
+  @OneToMany(() => CartItem, (cartItem) => cartItem.product)
+  cartItems!: CartItem[];
 }
