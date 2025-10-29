@@ -3,6 +3,7 @@ import 'tsconfig-paths/register';
 import express from 'express';
 import { AppDataSource } from '@/config/data-source';
 import authRoutes from '@/rest/auth.routes';
+import categoryRoutes from '@/rest/category.routes';
 import { errorHandler } from '@/common/middleware/error';
 
 const app = express();
@@ -13,6 +14,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/categories', categoryRoutes)
 
 // Error handler
 app.use(errorHandler);
