@@ -7,6 +7,7 @@ import { AppDataSource } from '@/config/data-source';
 import authRoutes from '@/rest/auth.routes';
 import cartRoutes from '@/rest/cart.routes';
 import categoryRoutes from '@/rest/category.routes';
+import orderRoutes from '@/rest/order.routes';
 import productRoutes from '@/rest/product.routes';
 import walletRoutes from '@/rest/wallet.routes';
 
@@ -22,6 +23,7 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/wallets', walletRoutes);
+app.use('/api/orders', orderRoutes);
 
 // Error handler
 app.use(errorHandler);

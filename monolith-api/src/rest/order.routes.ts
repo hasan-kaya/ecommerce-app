@@ -1,0 +1,25 @@
+import { Router, Response } from 'express';
+
+import { authenticate, AuthRequest } from '@/auth/middleware';
+import { asyncHandler } from '@/common/middleware/error';
+import { sendSuccess } from '@/common/utils/response';
+import { OrderService } from '@/services/OrderService';
+import { createOrderSchema } from '@/validators/order.validators';
+
+const router = Router();
+const orderService = new OrderService();
+
+router.post(
+  '/checkout',
+  authenticate,
+  asyncHandler(async (req: AuthRequest, res: Response) => {
+    const validatedData = createOrderSchema.parse(req.body);
+    const { walletCurrency } = validatedData;
+
+    const order = await orderService.createOrder(walletCurrency, req.user!.userId);
+
+    sendSuccess(res, order);
+  })
+);
+
+export default router;

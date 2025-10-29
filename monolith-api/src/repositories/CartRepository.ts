@@ -30,4 +30,8 @@ export class CartRepository {
     });
     return this.cartItemRepository.save(cartItem);
   }
+
+  async delete(cartId: string) {
+    return this.cartRepository.delete(cartId);
+  }
 }
