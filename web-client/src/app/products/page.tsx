@@ -1,7 +1,7 @@
-import ProductCard from '@/components/ProductCard';
-import ProductFilters from '@/components/products/ProductFilters';
-import Pagination from '@/components/products/Pagination';
-import SortSelect from '@/components/products/SortSelect';
+import ProductCard from '@/components/shared/ProductCard';
+import ProductFilters from '@/components/features/products/ProductFilters';
+import Pagination from '@/components/features/products/Pagination';
+import SortSelect from '@/components/features/products/SortSelect';
 
 const allProducts = [
   {

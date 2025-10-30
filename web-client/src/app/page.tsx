@@ -1,4 +1,4 @@
-import ProductCard from '@/components/ProductCard';
+import ProductCard from '@/components/shared/ProductCard';
 
 const featuredProducts = [
   { id: '1', name: 'Wireless Headphones', price: 9999, currency: 'USD' },
