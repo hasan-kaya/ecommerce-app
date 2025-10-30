@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import UserMenu from '@/components/layout/UserMenu';
 
 export default function Header() {
   return (
@@ -9,17 +10,21 @@ export default function Header() {
             E-commerce Platform
           </Link>
 
-          <nav className="flex gap-6">
-            <Link href="/" className="hover:text-gray-600">
-              Home
-            </Link>
-            <Link href="/products" className="hover:text-gray-600">
-              Products
-            </Link>
-            <Link href="/cart" className="hover:text-gray-600">
-              Cart
-            </Link>
-          </nav>
+          <div className="flex items-center gap-6">
+            <nav className="flex gap-6">
+              <Link href="/" className="hover:text-gray-600">
+                Home
+              </Link>
+              <Link href="/products" className="hover:text-gray-600">
+                Products
+              </Link>
+              <Link href="/cart" className="hover:text-gray-600">
+                Cart
+              </Link>
+            </nav>
+
+            <UserMenu />
+          </div>
         </div>
       </div>
     </header>
