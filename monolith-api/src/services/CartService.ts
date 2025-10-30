@@ -2,11 +2,11 @@ import { AppError } from '@/common/middleware/error';
 import { CartItem } from '@/entities/CartItem';
 import { Product } from '@/entities/Product';
 import { CartRepository } from '@/repositories/CartRepository';
-import { ProductRepository } from '@/repositories/ProductRepository';
+import { ProductService } from '@/services/ProductService';
 
 export class CartService {
   private cartRepository = new CartRepository();
-  private productRepository = new ProductRepository();
+  private productService = new ProductService();
 
   private checkStockForAdd(product: Product, existingQty: number, newQty: number) {
     if (product.stock_qty < existingQty + newQty) {
@@ -38,10 +38,7 @@ export class CartService {
   }
 
   async addToCart(userId: string, productId: string, qty: number) {
-    const product = await this.productRepository.findById(productId);
-    if (!product) {
-      throw new AppError('Product not found', 404);
-    }
+    const product = await this.productService.getProduct(productId);
 
     let cart = await this.cartRepository.findByUserId(userId);
 

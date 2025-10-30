@@ -8,6 +8,14 @@ export class ProductService {
     return this.productRepository.findAll(categorySlug, search);
   }
 
+  async getProduct(productId: string) {
+    const product = await this.productRepository.findById(productId);
+    if (!product) {
+      throw new AppError('Product not found', 404);
+    }
+    return product;
+  }
+
   async decreaseProductStock(productId: string, quantity: number) {
     const product = await this.productRepository.decreaseStock(productId, quantity);
     if (!product) {
