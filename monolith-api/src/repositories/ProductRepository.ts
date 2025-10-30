@@ -22,4 +22,8 @@ export class ProductRepository {
       relations: { category: true },
     });
   }
+
+  async findById(id: string) {
+    return this.repository.findOne({ where: { id } });
+  }
 }
