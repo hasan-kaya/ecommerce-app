@@ -19,6 +19,15 @@ export class OrderService {
       throw new AppError('Cart is empty', 400);
     }
 
+    cart.cartItems.forEach((cartItem) => {
+      if (cartItem.product.stock_qty < cartItem.qty) {
+        throw new AppError(
+          `You can purchase a maximum of ${cartItem.product.stock_qty} units of ${cartItem.product.name}.`,
+          400
+        );
+      }
+    });
+
     let totalPriceMinor = 0;
     for (const cartItem of cart.cartItems) {
       const itemTotal = cartItem.product.price_minor * cartItem.qty;
