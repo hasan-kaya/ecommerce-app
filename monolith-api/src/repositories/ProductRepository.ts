@@ -26,4 +26,12 @@ export class ProductRepository {
   async findById(id: string) {
     return this.repository.findOne({ where: { id } });
   }
+
+  async decreaseStock(productId: string, quantity: number) {
+    const product = await this.repository.findOne({ where: { id: productId } });
+    if (!product) return null;
+
+    product.stock_qty = product.stock_qty - quantity;
+    return this.repository.save(product);
+  }
 }

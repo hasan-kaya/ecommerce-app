@@ -37,4 +37,19 @@ export class WalletRepository {
     await this.repository.save(wallet);
     return wallet;
   }
+
+  public async deductBalance(
+    userId: string,
+    currency: string,
+    amountMinor: number
+  ): Promise<Wallet | null> {
+    const wallet = await this.repository.findOne({
+      where: { user: { id: userId }, currency },
+    });
+    if (!wallet) return null;
+
+    wallet.balance_minor = Number(wallet.balance_minor) - amountMinor;
+    await this.repository.save(wallet);
+    return wallet;
+  }
 }
