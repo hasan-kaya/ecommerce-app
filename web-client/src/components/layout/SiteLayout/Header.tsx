@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import UserMenu from '@/components/layout/UserMenu';
+import UserMenu from '@/components/shared/UserMenu';
 
 export default function Header() {
   return (
