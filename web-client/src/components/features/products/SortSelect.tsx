@@ -1,8 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import Label from '@/components/ui/Label';
-import Select from '@/components/ui/Select';
+import FormSelect from '@/components/ui/FormSelect';
 
 type SortSelectProps = {
   currentSort: string;
@@ -26,8 +25,8 @@ export default function SortSelect({ currentSort }: SortSelectProps) {
 
   return (
     <div className="flex items-center gap-2">
-      <Label variant="small" className="font-medium">Sort by:</Label>
-      <Select
+      <FormSelect
+        label="Sort by:"
         value={currentSort}
         onChange={(e) => handleSortChange(e.target.value)}
         variant="small"
@@ -37,7 +36,7 @@ export default function SortSelect({ currentSort }: SortSelectProps) {
         <option value="name-desc">Name (Z-A)</option>
         <option value="price-asc">Price (Low to High)</option>
         <option value="price-desc">Price (High to Low)</option>
-      </Select>
+      </FormSelect>
     </div>
   );
 }

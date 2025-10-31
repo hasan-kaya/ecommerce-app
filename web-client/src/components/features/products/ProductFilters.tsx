@@ -2,8 +2,9 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
-import Label from '@/components/ui/Label';
 import Input from '@/components/ui/Input';
+import FormField from '@/components/ui/FormField';
+import FormRadio from '@/components/ui/FormRadio';
 
 type ProductFiltersProps = {
   searchQuery: string;
@@ -91,25 +92,20 @@ export default function ProductFilters({
       <div className="mb-6">
         <h4 className="font-semibold mb-3">Category</h4>
         <div className="space-y-2">
-          <Label variant="inline">
-            <input
-              type="radio"
-              name="category"
-              checked={selectedCategory === null}
-              onChange={() => handleCategoryChange(null)}
-            />
-            <span>All</span>
-          </Label>
+          <FormRadio
+            name="category"
+            checked={selectedCategory === null}
+            onChange={() => handleCategoryChange(null)}
+            label="All"
+          />
           {categories.map((category) => (
-            <Label key={category} variant="inline">
-              <input
-                type="radio"
-                name="category"
-                checked={selectedCategory === category}
-                onChange={() => handleCategoryChange(category)}
-              />
-              <span>{category}</span>
-            </Label>
+            <FormRadio
+              key={category}
+              name="category"
+              checked={selectedCategory === category}
+              onChange={() => handleCategoryChange(category)}
+              label={category}
+            />
           ))}
         </div>
       </div>
@@ -117,24 +113,22 @@ export default function ProductFilters({
       <div>
         <h4 className="font-semibold mb-3">Price Range</h4>
         <div className="flex gap-2">
-          <div className="flex-1">
-            <Label variant="small">Min</Label>
-            <Input
-              type="number"
-              defaultValue={minPrice}
-              onChange={(e) => handlePriceChange(Number(e.target.value), maxPrice)}
-              min="0"
-            />
-          </div>
-          <div className="flex-1">
-            <Label variant="small">Max</Label>
-            <Input
-              type="number"
-              defaultValue={maxPrice}
-              onChange={(e) => handlePriceChange(minPrice, Number(e.target.value))}
-              min="0"
-            />
-          </div>
+          <FormField
+            label="Min"
+            type="number"
+            defaultValue={minPrice}
+            onChange={(e) => handlePriceChange(Number(e.target.value), maxPrice)}
+            min="0"
+            variant="small"
+          />
+          <FormField
+            label="Max"
+            type="number"
+            defaultValue={maxPrice}
+            onChange={(e) => handlePriceChange(minPrice, Number(e.target.value))}
+            min="0"
+            variant="small"
+          />
         </div>
       </div>
     </div>

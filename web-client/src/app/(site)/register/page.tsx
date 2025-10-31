@@ -4,8 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
-import Label from '@/components/ui/Label';
-import Input from '@/components/ui/Input';
+import FormField from '@/components/ui/FormField';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -44,57 +43,41 @@ export default function RegisterPage() {
         <h1 className="text-3xl font-bold mb-8 text-center">Register</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label>
-              Name
-            </Label>
-            <Input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              placeholder="John Doe"
-            />
-          </div>
+          <FormField
+            label="Name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            placeholder="John Doe"
+          />
 
-          <div>
-            <Label>
-              Email
-            </Label>
-            <Input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              placeholder="your@email.com"
-            />
-          </div>
+          <FormField
+            label="Email"
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            placeholder="your@email.com"
+          />
 
-          <div>
-            <Label>
-              Password
-            </Label>
-            <Input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              placeholder="••••••••"
-            />
-          </div>
+          <FormField
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            placeholder="••••••••"
+          />
 
-          <div>
-            <Label>
-              Confirm Password
-            </Label>
-            <Input
-              type="password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              placeholder="••••••••"
-            />
-          </div>
+          <FormField
+            label="Confirm Password"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+            placeholder="••••••••"
+          />
 
           <Button
             type="submit"
