@@ -1,6 +1,7 @@
 import { Router, Response } from 'express';
 
-import { authenticate, AuthRequest } from '@/auth/middleware';
+import { authenticate, AuthRequest, requireScopes } from '@/auth/middleware';
+import { Scope } from '@/auth/scopes';
 import { asyncHandler } from '@/common/middleware/error';
 import { sendSuccess } from '@/common/utils/response';
 import { WalletService } from '@/services/WalletService';
@@ -12,6 +13,7 @@ const walletService = new WalletService();
 router.get(
   '/',
   authenticate,
+  requireScopes(Scope.WALLET_READ),
   asyncHandler(async (req: AuthRequest, res: Response) => {
     const wallets = await walletService.getUserWallets(req.user!.userId);
     return sendSuccess(res, wallets);
@@ -21,6 +23,7 @@ router.get(
 router.post(
   '/top-up',
   authenticate,
+  requireScopes(Scope.WALLET_WRITE),
   asyncHandler(async (req: AuthRequest, res: Response) => {
     const validatedData = walletTopUpSchema.parse(req.body);
     const { currency, amountMinor } = validatedData;

@@ -1,6 +1,7 @@
 import { Router, Response } from 'express';
 
-import { authenticate, AuthRequest } from '@/auth/middleware';
+import { authenticate, AuthRequest, requireScopes } from '@/auth/middleware';
+import { Scope } from '@/auth/scopes';
 import { asyncHandler } from '@/common/middleware/error';
 import { sendSuccess } from '@/common/utils/response';
 import { OrderService } from '@/services/OrderService';
@@ -12,6 +13,7 @@ const orderService = new OrderService();
 router.post(
   '/checkout',
   authenticate,
+  requireScopes(Scope.ORDERS_WRITE, Scope.WALLET_READ),
   asyncHandler(async (req: AuthRequest, res: Response) => {
     const validatedData = createOrderSchema.parse(req.body);
     const { walletCurrency } = validatedData;

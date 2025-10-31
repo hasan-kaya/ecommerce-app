@@ -1,6 +1,7 @@
 import { Router, Response } from 'express';
 
-import { authenticate, AuthRequest } from '@/auth/middleware';
+import { authenticate, AuthRequest, requireScopes } from '@/auth/middleware';
+import { Scope } from '@/auth/scopes';
 import { asyncHandler } from '@/common/middleware/error';
 import { sendSuccess } from '@/common/utils/response';
 import { CartService } from '@/services/CartService';
@@ -12,6 +13,7 @@ const cartService = new CartService();
 router.post(
   '/items',
   authenticate,
+  requireScopes(Scope.CART_WRITE),
   asyncHandler(async (req: AuthRequest, res: Response) => {
     const validatedData = addToCartSchema.parse(req.body);
     const userId = req.user!.userId;

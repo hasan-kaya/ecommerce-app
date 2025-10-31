@@ -1,8 +1,9 @@
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 
+import { ScopeGroups } from '@/auth/scopes';
 import { AppError } from '@/common/middleware/error';
-import { User } from '@/entities/User';
+import { User, UserRole } from '@/entities/User';
 import { UserRepository } from '@/repositories/UserRepository';
 
 export class AuthService {
@@ -83,7 +84,13 @@ export class AuthService {
   }
 
   private generateTokens(user: User) {
-    const payload = { userId: user.id, email: user.email };
+    const scopes = user.role === UserRole.ADMIN ? ScopeGroups.ADMIN : ScopeGroups.USER;
+
+    const payload = {
+      userId: user.id,
+      email: user.email,
+      scopes,
+    };
 
     const accessToken = jwt.sign(payload, this.JWT_SECRET, {
       expiresIn: this.JWT_EXPIRES_IN,
@@ -123,7 +130,11 @@ export class AuthService {
 
   verifyToken(token: string) {
     try {
-      return jwt.verify(token, this.JWT_SECRET) as { userId: string; email: string };
+      return jwt.verify(token, this.JWT_SECRET) as {
+        userId: string;
+        email: string;
+        scopes: string[];
+      };
     } catch {
       throw new AppError('Invalid token');
     }

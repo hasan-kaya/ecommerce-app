@@ -4,6 +4,11 @@ import { Cart } from './Cart';
 import { Order } from './Order';
 import { Wallet } from './Wallet';
 
+export enum UserRole {
+  USER = 'user',
+  ADMIN = 'admin',
+}
+
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
@@ -17,6 +22,9 @@ export class User {
 
   @Column({ length: 255 })
   password!: string;
+
+  @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
+  role!: UserRole;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;

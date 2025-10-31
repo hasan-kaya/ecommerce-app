@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 
+import { Scope, hasScopes } from './scopes';
+
 import { sendError } from '@/common/utils/response';
 import { AuthService } from '@/services/AuthService';
 
@@ -7,6 +9,7 @@ export interface AuthRequest extends Request {
   user?: {
     userId: string;
     email: string;
+    scopes: string[];
   };
 }
 
@@ -28,4 +31,20 @@ export const authenticate = (req: AuthRequest, res: Response, next: NextFunction
   } catch {
     return sendError(res, 'Invalid token', 401);
   }
+};
+
+export const requireScopes = (...scopes: Scope[]) => {
+  return (req: AuthRequest, res: Response, next: NextFunction) => {
+    if (!req.user) {
+      return sendError(res, 'Authentication required', 401);
+    }
+
+    const userScopes = req.user.scopes || [];
+
+    if (!hasScopes(userScopes, scopes)) {
+      return sendError(res, `Insufficient permissions. Required scopes: ${scopes.join(', ')}`, 403);
+    }
+
+    next();
+  };
 };
