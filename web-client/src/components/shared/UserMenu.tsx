@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Button from '@/components/ui/Button';
 
 export default function UserMenu() {
   const router = useRouter();
@@ -60,15 +61,14 @@ export default function UserMenu() {
 
   return (
     <div className="relative">
-      <button
+      <Button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 hover:text-gray-600"
+        variant="ghost"
+        className="p-2"
       >
-        <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-          {user.name.charAt(0).toUpperCase()}
-        </div>
-        <span>{user.name}</span>
-      </button>
+        <span>👤</span>
+        <span>{user ? user.name : 'Account'}</span>
+      </Button>
 
       {isOpen && (
         <>
@@ -91,12 +91,13 @@ export default function UserMenu() {
             >
               Wallet
             </Link>
-            <button
+            <Button
               onClick={handleLogout}
-              className="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600"
+              variant="ghost"
+              className="w-full justify-start text-red-600 hover:bg-gray-100"
             >
               Logout
-            </button>
+            </Button>
           </div>
         </>
       )}

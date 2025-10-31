@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Button from '@/components/ui/Button';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -97,13 +98,14 @@ export default function RegisterPage() {
             />
           </div>
 
-          <button
+          <Button
             type="submit"
-            disabled={isLoading}
-            className="w-full bg-black text-white py-3 rounded hover:bg-gray-800 disabled:opacity-50"
+            isLoading={isLoading}
+            fullWidth
+            size="lg"
           >
             {isLoading ? 'Creating account...' : 'Register'}
-          </button>
+          </Button>
         </form>
 
         <p className="mt-6 text-center text-gray-600">

@@ -1,3 +1,5 @@
+import Button from '@/components/ui/Button';
+
 type CartSummaryProps = {
   subtotal: number;
   currency: string;
@@ -37,12 +39,13 @@ export default function CartSummary({
         </div>
       </div>
 
-      <button
+      <Button
         onClick={onCheckout}
-        className="w-full bg-black text-white py-3 rounded hover:bg-gray-800"
+        fullWidth
+        size="lg"
       >
         Proceed to Checkout
-      </button>
+      </Button>
     </div>
   );
 }

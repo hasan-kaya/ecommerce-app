@@ -1,3 +1,5 @@
+import Button from '@/components/ui/Button';
+
 type ProductCardProps = {
   name: string;
   price: number;
@@ -18,9 +20,9 @@ export default function ProductCard({ name, price, currency }: ProductCardProps)
         <span className="text-xl font-bold">
           {(price / 100).toFixed(2)} {currency}
         </span>
-        <button className="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">
+        <Button>
           Add to Cart
-        </button>
+        </Button>
       </div>
     </div>
   );

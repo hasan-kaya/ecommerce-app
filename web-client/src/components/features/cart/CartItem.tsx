@@ -1,3 +1,5 @@
+import Button from '@/components/ui/Button';
+
 type CartItemProps = {
   id: string;
   name: string;
@@ -31,20 +33,24 @@ export default function CartItem({
       </div>
 
       <div className="flex items-center gap-2">
-        <button
+        <Button
           onClick={() => onUpdateQuantity(id, quantity - 1)}
           disabled={quantity <= 1}
-          className="w-8 h-8 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+          variant="ghost"
+          size="sm"
+          className="w-8 h-8 p-0"
         >
           -
-        </button>
+        </Button>
         <span className="w-12 text-center">{quantity}</span>
-        <button
+        <Button
           onClick={() => onUpdateQuantity(id, quantity + 1)}
-          className="w-8 h-8 border rounded hover:bg-gray-100"
+          variant="ghost"
+          size="sm"
+          className="w-8 h-8 p-0"
         >
           +
-        </button>
+        </Button>
       </div>
 
       <div className="text-right w-24">
@@ -53,12 +59,14 @@ export default function CartItem({
         </p>
       </div>
 
-      <button
+      <Button
         onClick={() => onRemove(id)}
-        className="text-red-600 hover:text-red-800 px-2"
+        variant="danger"
+        size="sm"
+        className="bg-transparent text-red-600 hover:bg-red-50 hover:text-red-800"
       >
         Remove
-      </button>
+      </Button>
     </div>
   );
 }

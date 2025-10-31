@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
+import Button from '@/components/ui/Button';
 
 type PaginationProps = {
   currentPage: number;
@@ -21,33 +22,31 @@ export default function Pagination({ currentPage, totalPages }: PaginationProps)
 
   return (
     <div className="flex items-center justify-center gap-2 mt-8">
-      <button
+      <Button
         onClick={() => handlePageChange(currentPage - 1)}
         disabled={currentPage === 1}
-        className="px-4 py-2 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+        variant="ghost"
       >
         Previous
-      </button>
+      </Button>
 
       {pages.map((page) => (
-        <button
+        <Button
           key={page}
           onClick={() => handlePageChange(page)}
-          className={`px-4 py-2 border rounded ${
-            currentPage === page ? 'bg-black text-white' : 'hover:bg-gray-100'
-          }`}
+          variant={currentPage === page ? 'primary' : 'ghost'}
         >
           {page}
-        </button>
+        </Button>
       ))}
 
-      <button
+      <Button
         onClick={() => handlePageChange(currentPage + 1)}
         disabled={currentPage === totalPages}
-        className="px-4 py-2 border rounded hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+        variant="ghost"
       >
         Next
-      </button>
+      </Button>
     </div>
   );
 }

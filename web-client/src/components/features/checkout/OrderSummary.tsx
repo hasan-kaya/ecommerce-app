@@ -1,3 +1,5 @@
+import Button from '@/components/ui/Button';
+
 type OrderItem = {
   id: string;
   name: string;
@@ -56,13 +58,14 @@ export default function OrderSummary({
         </div>
       </div>
 
-      <button
+      <Button
         onClick={onPlaceOrder}
-        disabled={isProcessing}
-        className="w-full bg-black text-white py-3 rounded hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+        isLoading={isProcessing}
+        fullWidth
+        size="lg"
       >
         {isProcessing ? 'Processing...' : 'Place Order'}
-      </button>
+      </Button>
     </div>
   );
 }
