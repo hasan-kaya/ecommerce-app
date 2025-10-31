@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import Label from '@/components/ui/Label';
+import Input from '@/components/ui/Input';
 
 type ProductFiltersProps = {
   searchQuery: string;
@@ -79,12 +80,11 @@ export default function ProductFilters({
 
       <div className="mb-6">
         <h4 className="font-semibold mb-3">Search</h4>
-        <input
+        <Input
           type="text"
           defaultValue={searchQuery}
           onChange={(e) => handleSearchChange(e.target.value)}
           placeholder="Search products..."
-          className="w-full border rounded px-3 py-2"
         />
       </div>
 
@@ -119,21 +119,19 @@ export default function ProductFilters({
         <div className="flex gap-2">
           <div className="flex-1">
             <Label variant="small">Min</Label>
-            <input
+            <Input
               type="number"
               defaultValue={minPrice}
               onChange={(e) => handlePriceChange(Number(e.target.value), maxPrice)}
-              className="w-full border rounded px-3 py-2 mt-1"
               min="0"
             />
           </div>
           <div className="flex-1">
             <Label variant="small">Max</Label>
-            <input
+            <Input
               type="number"
               defaultValue={maxPrice}
               onChange={(e) => handlePriceChange(minPrice, Number(e.target.value))}
-              className="w-full border rounded px-3 py-2 mt-1"
               min="0"
             />
           </div>

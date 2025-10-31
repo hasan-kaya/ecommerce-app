@@ -1,6 +1,8 @@
 'use client';
 
 import Label from '@/components/ui/Label';
+import Input from '@/components/ui/Input';
+import Select from '@/components/ui/Select';
 
 type PaymentMethodProps = {
   selectedMethod: 'wallet' | 'card';
@@ -41,10 +43,9 @@ export default function PaymentMethod({
                 <Label>
                   Select Wallet
                 </Label>
-                <select
+                <Select
                   value={selectedWallet}
                   onChange={(e) => onWalletChange(e.target.value)}
-                  className="w-full mt-1 border rounded px-3 py-2"
                 >
                   <option value="">Choose a wallet</option>
                   {wallets.map((wallet) => (
@@ -52,7 +53,7 @@ export default function PaymentMethod({
                       {wallet.currency} - Balance: {(wallet.balance / 100).toFixed(2)}
                     </option>
                   ))}
-                </select>
+                </Select>
               </div>
             )}
           </div>
@@ -78,10 +79,9 @@ export default function PaymentMethod({
                   <Label>
                     Card Number
                   </Label>
-                  <input
+                  <Input
                     type="text"
                     placeholder="1234 5678 9012 3456"
-                    className="w-full mt-1 border rounded px-3 py-2"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
@@ -89,18 +89,16 @@ export default function PaymentMethod({
                     <Label>
                       Expiry Date
                     </Label>
-                    <input
+                    <Input
                       type="text"
                       placeholder="MM/YY"
-                      className="w-full mt-1 border rounded px-3 py-2"
                     />
                   </div>
                   <div>
                     <Label>CVV</Label>
-                    <input
+                    <Input
                       type="text"
                       placeholder="123"
-                      className="w-full mt-1 border rounded px-3 py-2"
                     />
                   </div>
                 </div>

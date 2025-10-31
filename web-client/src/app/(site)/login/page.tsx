@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
 import Label from '@/components/ui/Label';
+import Input from '@/components/ui/Input';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -39,12 +40,11 @@ export default function LoginPage() {
             <Label>
               Email
             </Label>
-            <input
+            <Input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full border rounded px-3 py-2"
               placeholder="your@email.com"
             />
           </div>
@@ -53,12 +53,11 @@ export default function LoginPage() {
             <Label>
               Password
             </Label>
-            <input
+            <Input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full border rounded px-3 py-2"
               placeholder="••••••••"
             />
           </div>
