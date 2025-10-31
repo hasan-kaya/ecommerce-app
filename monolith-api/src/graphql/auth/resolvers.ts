@@ -1,3 +1,4 @@
+import { setAuthCookies } from '@/auth/utils/cookie';
 import { GraphQLContext, requireAuth } from '@/graphql/utils/auth';
 import { AuthService } from '@/services/AuthService';
 
@@ -12,21 +13,49 @@ export const authResolvers = {
   },
 
   Mutation: {
-    login: async (_parent: unknown, args: { input: { email: string; password: string } }) => {
+    login: async (
+      _parent: unknown,
+      args: { input: { email: string; password: string } },
+      context: GraphQLContext
+    ) => {
       const { email, password } = args.input;
-      return authService.login(email, password);
+      const result = await authService.login(email, password);
+
+      if (context.res) {
+        setAuthCookies(context.res, result);
+      }
+
+      return result;
     },
 
     register: async (
       _parent: unknown,
-      args: { input: { email: string; name: string; password: string } }
+      args: { input: { email: string; name: string; password: string } },
+      context: GraphQLContext
     ) => {
       const { email, name, password } = args.input;
-      return authService.register(email, name, password);
+      const result = await authService.register(email, name, password);
+
+      if (context.res) {
+        setAuthCookies(context.res, result);
+      }
+
+      return result;
     },
 
-    refreshToken: async (_parent: unknown, args: { refreshToken: string }) => {
-      return authService.refreshToken(args.refreshToken);
+    refreshToken: async (
+      _parent: unknown,
+      args: { refreshToken: string },
+      context: GraphQLContext
+    ) => {
+      const token = args.refreshToken || context.res?.req.cookies?.refresh_token;
+      const result = await authService.refreshToken(token);
+
+      if (context.res) {
+        setAuthCookies(context.res, result);
+      }
+
+      return result;
     },
   },
 };

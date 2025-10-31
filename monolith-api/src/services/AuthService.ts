@@ -2,6 +2,7 @@ import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 
 import { ScopeGroups } from '@/auth/scopes';
+import { parseExpiration } from '@/auth/utils/token';
 import { AppError } from '@/common/middleware/error';
 import { User, UserRole } from '@/entities/User';
 import { UserRepository } from '@/repositories/UserRepository';
@@ -103,29 +104,13 @@ export class AuthService {
     return {
       access_token: accessToken,
       refresh_token: refreshToken,
-      expires_in: this.parseExpiration(String(this.JWT_EXPIRES_IN)),
+      expires_in: parseExpiration(String(this.JWT_EXPIRES_IN)),
     };
   }
 
   private sanitizeUser(user: User) {
     const { password: _password, ...sanitized } = user;
     return sanitized;
-  }
-
-  private parseExpiration(exp: string): number {
-    const unit = exp.slice(-1);
-    const value = parseInt(exp.slice(0, -1));
-
-    switch (unit) {
-      case 'h':
-        return value * 3600;
-      case 'd':
-        return value * 86400;
-      case 'm':
-        return value * 60;
-      default:
-        return 3600;
-    }
   }
 
   verifyToken(token: string) {

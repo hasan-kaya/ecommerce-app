@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 
 import { authenticate, AuthRequest } from '@/auth/middleware';
+import { setAuthCookies } from '@/auth/utils/cookie';
 import { asyncHandler } from '@/common/middleware/error';
 import { sendSuccess } from '@/common/utils/response';
 import { AuthService } from '@/services/AuthService';
@@ -19,6 +20,7 @@ router.post(
       validatedData.password
     );
 
+    setAuthCookies(res, result);
     return sendSuccess(res, result, 201);
   })
 );
@@ -29,6 +31,7 @@ router.post(
     const validatedData = loginSchema.parse(req.body);
     const result = await authService.login(validatedData.email, validatedData.password);
 
+    setAuthCookies(res, result);
     return sendSuccess(res, result);
   })
 );
@@ -39,6 +42,7 @@ router.post(
     const validatedData = refreshTokenSchema.parse(req.body);
     const result = await authService.refreshToken(validatedData.refresh_token);
 
+    setAuthCookies(res, result);
     return sendSuccess(res, result);
   })
 );

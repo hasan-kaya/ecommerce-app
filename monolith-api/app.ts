@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import 'tsconfig-paths/register';
 import { expressMiddleware } from '@as-integrations/express5';
+import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
 
@@ -20,6 +21,7 @@ const PORT = Number(process.env.PORT) || 4000;
 
 // Middleware
 app.use(express.json());
+app.use(cookieParser());
 
 // REST Routes
 app.use('/api/auth', authRoutes);
@@ -43,7 +45,10 @@ const startServer = async () => {
 
     app.use(
       '/graphql',
-      cors<cors.CorsRequest>(),
+      cors<cors.CorsRequest>({
+        origin: process.env.CLIENT_URL || 'http://localhost:3000',
+        credentials: true,
+      }),
       expressMiddleware(apolloServer, {
         context: createContext,
       })

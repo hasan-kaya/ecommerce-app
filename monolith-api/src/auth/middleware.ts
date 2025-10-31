@@ -17,13 +17,17 @@ const authService = new AuthService();
 
 export const authenticate = (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    const authHeader = req.headers.authorization;
+    // Try to get token from cookie first, then fallback to Authorization header
+    let token = req.cookies?.access_token;
 
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return sendError(res, 'No token provided', 401);
+    if (!token) {
+      const authHeader = req.headers.authorization;
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return sendError(res, 'No token provided', 401);
+      }
+      token = authHeader.substring(7);
     }
 
-    const token = authHeader.substring(7);
     const decoded = authService.verifyToken(token);
 
     req.user = decoded;

@@ -1,7 +1,9 @@
+import { Response } from 'express';
 import { GraphQLError } from 'graphql';
 
 export interface GraphQLContext {
   userId?: string;
+  res?: Response;
 }
 
 export const requireAuth = (context: GraphQLContext): string => {
