@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
+import Label from '@/components/ui/Label';
 
 type SortSelectProps = {
   currentSort: string;
@@ -24,7 +25,7 @@ export default function SortSelect({ currentSort }: SortSelectProps) {
 
   return (
     <div className="flex items-center gap-2">
-      <label className="text-sm font-medium text-gray-700">Sort by:</label>
+      <Label variant="small" className="font-medium">Sort by:</Label>
       <select
         value={currentSort}
         onChange={(e) => handleSortChange(e.target.value)}

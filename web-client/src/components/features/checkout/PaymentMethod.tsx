@@ -1,5 +1,7 @@
 'use client';
 
+import Label from '@/components/ui/Label';
+
 type PaymentMethodProps = {
   selectedMethod: 'wallet' | 'card';
   onMethodChange: (method: 'wallet' | 'card') => void;
@@ -21,7 +23,7 @@ export default function PaymentMethod({
 
       <div className="space-y-4">
         {/* Wallet Option */}
-        <label className="flex items-start gap-3 p-4 border rounded cursor-pointer hover:bg-gray-50">
+        <Label variant="inline" className="items-start gap-3 p-4 border rounded hover:bg-gray-50">
           <input
             type="radio"
             name="paymentMethod"
@@ -36,9 +38,9 @@ export default function PaymentMethod({
 
             {selectedMethod === 'wallet' && (
               <div className="mt-3">
-                <label className="text-sm font-medium text-gray-700">
+                <Label>
                   Select Wallet
-                </label>
+                </Label>
                 <select
                   value={selectedWallet}
                   onChange={(e) => onWalletChange(e.target.value)}
@@ -54,10 +56,10 @@ export default function PaymentMethod({
               </div>
             )}
           </div>
-        </label>
+        </Label>
 
         {/* Card Option */}
-        <label className="flex items-start gap-3 p-4 border rounded cursor-pointer hover:bg-gray-50">
+        <Label variant="inline" className="items-start gap-3 p-4 border rounded hover:bg-gray-50">
           <input
             type="radio"
             name="paymentMethod"
@@ -73,9 +75,9 @@ export default function PaymentMethod({
             {selectedMethod === 'card' && (
               <div className="mt-3 space-y-3">
                 <div>
-                  <label className="text-sm font-medium text-gray-700">
+                  <Label>
                     Card Number
-                  </label>
+                  </Label>
                   <input
                     type="text"
                     placeholder="1234 5678 9012 3456"
@@ -84,9 +86,9 @@ export default function PaymentMethod({
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-sm font-medium text-gray-700">
+                    <Label>
                       Expiry Date
-                    </label>
+                    </Label>
                     <input
                       type="text"
                       placeholder="MM/YY"
@@ -94,7 +96,7 @@ export default function PaymentMethod({
                     />
                   </div>
                   <div>
-                    <label className="text-sm font-medium text-gray-700">CVV</label>
+                    <Label>CVV</Label>
                     <input
                       type="text"
                       placeholder="123"
@@ -105,7 +107,7 @@ export default function PaymentMethod({
               </div>
             )}
           </div>
-        </label>
+        </Label>
       </div>
     </div>
   );

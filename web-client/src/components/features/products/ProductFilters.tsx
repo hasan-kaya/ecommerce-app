@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
+import Label from '@/components/ui/Label';
 
 type ProductFiltersProps = {
   searchQuery: string;
@@ -90,7 +91,7 @@ export default function ProductFilters({
       <div className="mb-6">
         <h4 className="font-semibold mb-3">Category</h4>
         <div className="space-y-2">
-          <label className="flex items-center gap-2 cursor-pointer">
+          <Label variant="inline">
             <input
               type="radio"
               name="category"
@@ -98,9 +99,9 @@ export default function ProductFilters({
               onChange={() => handleCategoryChange(null)}
             />
             <span>All</span>
-          </label>
+          </Label>
           {categories.map((category) => (
-            <label key={category} className="flex items-center gap-2 cursor-pointer">
+            <Label key={category} variant="inline">
               <input
                 type="radio"
                 name="category"
@@ -108,7 +109,7 @@ export default function ProductFilters({
                 onChange={() => handleCategoryChange(category)}
               />
               <span>{category}</span>
-            </label>
+            </Label>
           ))}
         </div>
       </div>
@@ -117,7 +118,7 @@ export default function ProductFilters({
         <h4 className="font-semibold mb-3">Price Range</h4>
         <div className="flex gap-2">
           <div className="flex-1">
-            <label className="text-sm text-gray-600">Min</label>
+            <Label variant="small">Min</Label>
             <input
               type="number"
               defaultValue={minPrice}
@@ -127,7 +128,7 @@ export default function ProductFilters({
             />
           </div>
           <div className="flex-1">
-            <label className="text-sm text-gray-600">Max</label>
+            <Label variant="small">Max</Label>
             <input
               type="number"
               defaultValue={maxPrice}

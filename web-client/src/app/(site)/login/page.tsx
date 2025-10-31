@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
+import Label from '@/components/ui/Label';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -35,9 +36,9 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <Label>
               Email
-            </label>
+            </Label>
             <input
               type="email"
               value={email}
@@ -49,9 +50,9 @@ export default function LoginPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <Label>
               Password
-            </label>
+            </Label>
             <input
               type="password"
               value={password}
