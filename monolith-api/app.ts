@@ -5,6 +5,8 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express from 'express';
 
+import { oidc } from '@/auth/oidc-provider';
+import oidcRoutes from '@/auth/oidc.routes';
 import { errorHandler } from '@/common/middleware/error';
 import { AppDataSource } from '@/config/data-source';
 import { createContext } from '@/graphql/context';
@@ -20,10 +22,21 @@ const app = express();
 const PORT = Number(process.env.PORT) || 4000;
 
 // Middleware
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL || 'http://localhost:3000',
+    credentials: true,
+  })
+);
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-// REST Routes
+// OIDC Routes
+app.use('/interaction', oidcRoutes);
+app.use('/oidc', oidc.callback());
+
+// Rest Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/products', productRoutes);
@@ -31,7 +44,7 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/wallets', walletRoutes);
 app.use('/api/orders', orderRoutes);
 
-// Error handler
+// Error Handler
 app.use(errorHandler);
 
 const startServer = async () => {
@@ -39,24 +52,25 @@ const startServer = async () => {
     await AppDataSource.initialize();
     console.log('Database connection established');
 
+    const { connectRedis } = await import('@/config/redis');
+    await connectRedis();
+    console.log('Redis connection established');
+
     // GraphQL Server
     const apolloServer = createApolloServer();
     await apolloServer.start();
 
     app.use(
       '/graphql',
-      cors<cors.CorsRequest>({
-        origin: process.env.CLIENT_URL || 'http://localhost:3000',
-        credentials: true,
-      }),
       expressMiddleware(apolloServer, {
         context: createContext,
       })
     );
 
     app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
+      console.log(`Server running on http://localhost:${PORT}`);
       console.log(`GraphQL endpoint: http://localhost:${PORT}/graphql`);
+      console.log(`OIDC issuer: http://localhost:${PORT}/oidc`);
     });
   } catch (error) {
     console.error('Database connection failed:', error);

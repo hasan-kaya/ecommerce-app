@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 
 import { GraphQLContext } from '@/graphql/utils/auth';
-import { AuthService } from '@/services/AuthService';
+import { SessionService } from '@/services/SessionService';
 
-const authService = new AuthService();
+const sessionService = new SessionService();
 
 export const createContext = async ({
   req,
@@ -12,17 +12,27 @@ export const createContext = async ({
   req: Request;
   res: Response;
 }): Promise<GraphQLContext> => {
-  // Try to get token from cookie first, then fallback to Authorization header
-  const token = req.cookies?.access_token || req.headers.authorization?.replace('Bearer ', '');
+  const cookieToken = req.cookies?.['session_token'];
+
+  const authHeader = req.headers.authorization;
+  const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null;
+
+  const token = cookieToken || bearerToken;
 
   if (!token) {
     return { res };
   }
 
   try {
-    const decoded = authService.verifyToken(token);
-    return { userId: decoded.userId, res };
-  } catch {
+    const session = await sessionService.getSession(token);
+
+    if (!session) {
+      return { res };
+    }
+
+    return { userId: session.userId, res };
+  } catch (error) {
+    console.error('GraphQL context error:', error);
     return { res };
   }
 };

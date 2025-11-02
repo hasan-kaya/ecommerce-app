@@ -1,52 +1,62 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useSession, signOut } from 'next-auth/react';
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
 
 export default function UserMenu() {
-  const router = useRouter();
+  const { data: session, status } = useSession();
   const [user, setUser] = useState<{ name: string; email: string } | null>(
     null
   );
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    // Check if user is logged in
-    const checkUser = () => {
-      const userData = localStorage.getItem('user');
-      if (userData) {
-        setUser(JSON.parse(userData));
+    const fetchUser = async () => {
+      if (status === 'authenticated' && session?.user) {
+        try {
+          const response = await fetch(
+            process.env.NEXT_PUBLIC_BACKEND_URL + '/graphql',
+            {
+              method: 'POST',
+              credentials: 'include',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                query: `
+                query Me {
+                  me {
+                    id
+                    name
+                    email
+                  }
+                }
+              `,
+              }),
+            }
+          );
+
+          const { data } = await response.json();
+          if (data?.me) {
+            setUser(data.me);
+          }
+        } catch (error) {
+          console.error('Failed to fetch user:', error);
+        }
       } else {
         setUser(null);
       }
     };
 
-    // Initial check
-    checkUser();
+    fetchUser();
+  }, [session, status]);
 
-    // Listen for storage changes (from other tabs/windows)
-    window.addEventListener('storage', checkUser);
-
-    // Listen for custom event (from same tab)
-    window.addEventListener('userChanged', checkUser);
-
-    return () => {
-      window.removeEventListener('storage', checkUser);
-      window.removeEventListener('userChanged', checkUser);
-    };
-  }, []);
-
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-
-    // Dispatch custom event to notify other components
-    window.dispatchEvent(new Event('userChanged'));
-
+  const handleLogout = async () => {
+    await signOut({ callbackUrl: '/' });
     setUser(null);
     setIsOpen(false);
-    router.push('/');
   };
 
   if (!user) {

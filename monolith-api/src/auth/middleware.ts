@@ -1,9 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 
-import { Scope, hasScopes } from './scopes';
+import { Scope, ScopeGroups, hasScopes } from './scopes';
 
 import { sendError } from '@/common/utils/response';
-import { AuthService } from '@/services/AuthService';
+import { SessionService } from '@/services/SessionService';
 
 export interface AuthRequest extends Request {
   user?: {
@@ -13,27 +13,39 @@ export interface AuthRequest extends Request {
   };
 }
 
-const authService = new AuthService();
+const sessionService = new SessionService();
 
-export const authenticate = (req: AuthRequest, res: Response, next: NextFunction) => {
+export const authenticate = async (req: AuthRequest, res: Response, next: NextFunction) => {
   try {
-    // Try to get token from cookie first, then fallback to Authorization header
-    let token = req.cookies?.access_token;
+    const cookieToken = req.cookies?.['session_token'];
+
+    const authHeader = req.headers.authorization;
+    const bearerToken = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : null;
+
+    const token = cookieToken || bearerToken;
 
     if (!token) {
-      const authHeader = req.headers.authorization;
-      if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return sendError(res, 'No token provided', 401);
-      }
-      token = authHeader.substring(7);
+      return sendError(res, 'No authorization token provided', 401);
     }
 
-    const decoded = authService.verifyToken(token);
+    const session = await sessionService.getSession(token);
 
-    req.user = decoded;
+    if (!session) {
+      return sendError(res, 'Invalid or expired session', 401);
+    }
+
+    await sessionService.refreshSession(token);
+
+    req.user = {
+      userId: session.userId,
+      email: session.email,
+      scopes: session.role === 'admin' ? [...ScopeGroups.ADMIN] : [...ScopeGroups.USER],
+    };
+
     next();
-  } catch {
-    return sendError(res, 'Invalid token', 401);
+  } catch (error) {
+    console.error('Authentication error:', error);
+    return sendError(res, 'Authentication failed', 401);
   }
 };
 

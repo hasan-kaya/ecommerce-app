@@ -20,9 +20,6 @@ export class User {
   @Column({ length: 255 })
   name!: string;
 
-  @Column({ length: 255 })
-  password!: string;
-
   @Column({ type: 'enum', enum: UserRole, default: UserRole.USER })
   role!: UserRole;
 
