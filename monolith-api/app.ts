@@ -9,6 +9,7 @@ import { oidc } from '@/auth/oidc-provider';
 import oidcRoutes from '@/auth/oidc.routes';
 import { errorHandler } from '@/common/middleware/error';
 import { AppDataSource } from '@/config/data-source';
+import { ipLimiter, authLimiter, userLimiter } from '@/config/rateLimiter';
 import { createContext } from '@/graphql/context';
 import { createApolloServer } from '@/graphql/server';
 import authRoutes from '@/rest/auth.routes';
@@ -32,9 +33,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+// IP-based rate limiter
+app.use(ipLimiter);
+
+// User-based rate limiter
+app.use(userLimiter);
+
 // OIDC Routes
-app.use('/interaction', oidcRoutes);
-app.use('/oidc', oidc.callback());
+app.use('/interaction', authLimiter, oidcRoutes);
+app.use('/oidc', authLimiter, oidc.callback());
 
 // Rest Routes
 app.use('/api/auth', authRoutes);
@@ -55,6 +62,10 @@ const startServer = async () => {
     const { connectRedis } = await import('@/config/redis');
     await connectRedis();
     console.log('Redis connection established');
+
+    const { initRateLimiters } = await import('@/config/rateLimiter');
+    initRateLimiters();
+    console.log('Rate limiters initialized');
 
     // GraphQL Server
     const apolloServer = createApolloServer();
