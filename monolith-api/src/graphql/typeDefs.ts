@@ -1,4 +1,5 @@
 import { authTypeDefs } from './auth';
+import { productTypeDefs } from './product';
 
 const baseTypeDefs = `#graphql
   type Query {
@@ -10,4 +11,4 @@ const baseTypeDefs = `#graphql
   }
 `;
 
-export const typeDefs = [baseTypeDefs, authTypeDefs];
+export const typeDefs = [baseTypeDefs, authTypeDefs, productTypeDefs];
