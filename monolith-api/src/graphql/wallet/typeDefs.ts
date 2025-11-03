@@ -33,7 +33,18 @@ export const walletTypeDefs = `#graphql
     ): WalletTransactionConnection!
   }
 
+  type TransferResult {
+    fromWallet: Wallet!
+    toWallet: Wallet!
+    convertedAmount: Int!
+  }
+
   extend type Mutation {
     topUpWallet(currency: String!, amountMinor: Int!): Wallet!
+    transferBetweenWallets(
+      fromCurrency: String!
+      toCurrency: String!
+      amountMinor: Int!
+    ): TransferResult!
   }
 `;

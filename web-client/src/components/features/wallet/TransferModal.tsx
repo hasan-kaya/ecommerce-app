@@ -1,11 +1,15 @@
 'use client';
 
 import { useState } from 'react';
+import { useMutation } from '@apollo/client/react';
 import Button from '@/components/ui/Button';
 import FormSelect from '@/components/ui/FormSelect';
 import FormField from '@/components/ui/FormField';
 import Modal from '@/components/ui/Modal';
 import { Wallet } from '@/graphql/types';
+import { TRANSFER_BETWEEN_WALLETS } from '@/graphql/mutations/wallet';
+import { GET_WALLETS } from '@/graphql/queries/wallet';
+import { formatMoney } from '@/lib/utils/money';
 
 type TransferModalProps = {
   isOpen: boolean;
@@ -25,24 +29,57 @@ export default function TransferModal({
 
   const fromWallet = wallets.find((w) => w.id === selectedFromWalletId);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [transferBetweenWallets, { loading }] = useMutation(
+    TRANSFER_BETWEEN_WALLETS,
+    {
+      refetchQueries: [{ query: GET_WALLETS }],
+      onCompleted: (data: any) => {
+        const { convertedAmount } = data.transferBetweenWallets;
+        const currency =
+          wallets.find((w) => w.id === toWalletId)?.currency || '';
+        const convertedAmountMajor = formatMoney(convertedAmount, currency);
+        alert(
+          `Transfer successful! Converted amount: ${convertedAmountMajor} ${currency}`
+        );
+        onClose();
+        setAmount('');
+        setToWalletId('');
+      },
+      onError: (error: any) => {
+        alert(`Error: ${error.message}`);
+      },
+    }
+  );
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!selectedFromWalletId) {
+    if (!fromWallet) {
       alert('Source wallet not selected');
       return;
     }
 
-    if (selectedFromWalletId === toWalletId) {
-      alert('Cannot transfer to the same wallet');
+    const toWallet = wallets.find((w) => w.id === toWalletId);
+    if (!toWallet) {
+      alert('Destination wallet not selected');
       return;
     }
 
-    // API call will be added later
-    alert(`Transfer ${amount} from ${selectedFromWalletId} to ${toWalletId}`);
-    onClose();
-    setAmount('');
-    setToWalletId('');
+    if (fromWallet.currency === toWallet.currency) {
+      alert('Cannot transfer to the same currency');
+      return;
+    }
+
+    // Convert amount to minor units
+    const amountMinor = Math.round(parseFloat(amount) * 100);
+
+    await transferBetweenWallets({
+      variables: {
+        fromCurrency: fromWallet.currency,
+        toCurrency: toWallet.currency,
+        amountMinor,
+      },
+    });
   };
 
   return (
@@ -90,8 +127,8 @@ export default function TransferModal({
           <Button type="button" onClick={onClose} variant="secondary" fullWidth>
             Cancel
           </Button>
-          <Button type="submit" fullWidth>
-            Transfer
+          <Button type="submit" fullWidth disabled={loading}>
+            {loading ? 'Processing...' : 'Transfer'}
           </Button>
         </div>
       </form>

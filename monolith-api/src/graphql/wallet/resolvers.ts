@@ -31,6 +31,18 @@ export const walletResolvers = {
       const wallet = await walletService.topUpUserWallet(userId, currency, amountMinor);
       return wallet;
     },
+    transferBetweenWallets: async (
+      _: unknown,
+      {
+        fromCurrency,
+        toCurrency,
+        amountMinor,
+      }: { fromCurrency: string; toCurrency: string; amountMinor: number },
+      context: GraphQLContext
+    ) => {
+      const userId = requireAuth(context);
+      return walletService.transferBetweenWallets(userId, fromCurrency, toCurrency, amountMinor);
+    },
   },
   Wallet: {
     balanceMinor: (parent: Wallet) => parent.balance_minor.toString(),
