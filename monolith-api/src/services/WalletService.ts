@@ -19,7 +19,6 @@ export class WalletService {
     page: number = 1,
     pageSize: number = 50
   ) {
-    // Find user's wallet by currency
     const wallet = await this.walletRepository.findByUserIdAndCurrency(userId, currency);
 
     if (!wallet) {
@@ -38,7 +37,6 @@ export class WalletService {
       total,
       page,
       pageSize,
-      hasMore: offset + transactions.length < total,
     };
   }
 

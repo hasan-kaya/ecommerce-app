@@ -10,41 +10,6 @@ import { WalletsResponse } from '@/graphql/types';
 import { GET_WALLETS } from '@/graphql/queries/wallet';
 import { useQuery } from '@apollo/client/react';
 
-const mockTransactions = [
-  {
-    id: '1',
-    type: 'top_up',
-    amount: 50000,
-    currency: 'TRY',
-    description: 'Top up via credit card',
-    createdAt: '2025-11-03T10:30:00Z',
-  },
-  {
-    id: '2',
-    type: 'transfer_out',
-    amount: 10000,
-    currency: 'TRY',
-    description: 'Transfer to USD wallet',
-    createdAt: '2025-11-03T09:15:00Z',
-  },
-  {
-    id: '3',
-    type: 'payment',
-    amount: 25000,
-    currency: 'TRY',
-    description: 'Order payment #ORD-123',
-    createdAt: '2025-11-02T14:20:00Z',
-  },
-  {
-    id: '4',
-    type: 'top_up',
-    amount: 2000,
-    currency: 'USD',
-    description: 'Top up via bank transfer',
-    createdAt: '2025-11-01T16:45:00Z',
-  },
-];
-
 export default function WalletsPage() {
   const [isTopUpModalOpen, setIsTopUpModalOpen] = useState(false);
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
@@ -79,7 +44,6 @@ export default function WalletsPage() {
   const wallets = walletsData?.wallets || [];
 
   const selectedWallet = wallets.find((w) => w.id === selectedWalletForHistory);
-  const filteredTransactions = mockTransactions;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -118,10 +82,7 @@ export default function WalletsPage() {
           onClose={() => setIsHistoryModalOpen(false)}
           title={`${selectedWallet.currency} Wallet History`}
         >
-          <TransactionHistory
-            transactions={filteredTransactions}
-            currency={selectedWallet.currency}
-          />
+          <TransactionHistory currency={selectedWallet.currency} />
         </Modal>
       )}
     </div>

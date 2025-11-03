@@ -1,33 +1,68 @@
+'use client';
+
+import { useState } from 'react';
+import { useQuery } from '@apollo/client/react';
 import { formatMoney } from '@/lib/utils/money';
+import { formatDate } from '@/lib/utils/date';
+import { GET_WALLET_TRANSACTIONS } from '@/graphql/queries/walletTransaction';
+import Pagination from '@/components/ui/Pagination';
 
 type Transaction = {
   id: string;
-  type: 'top_up' | 'transfer_in' | 'transfer_out' | 'payment';
-  amount: number;
+  type: 'top_up' | 'transfer_in' | 'transfer_out' | 'purchase';
+  amountMinor: string;
   currency: string;
   description: string;
   createdAt: string;
 };
 
 type TransactionHistoryProps = {
-  transactions: Transaction[];
   currency: string;
 };
 
 export default function TransactionHistory({
-  transactions,
   currency,
 }: TransactionHistoryProps) {
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
+
+  const { data, loading, error } = useQuery(GET_WALLET_TRANSACTIONS, {
+    variables: { currency, page: currentPage, pageSize },
+  });
+
+  if (loading) {
+    return (
+      <div className="py-6">
+        <p className="text-gray-500 text-center py-8">Loading...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="py-6">
+        <p className="text-red-500 text-center py-8">Error: {error.message}</p>
+      </div>
+    );
+  }
+
+  const transactions: Transaction[] =
+    (data as any)?.walletTransactions?.transactions || [];
+  const total = (data as any)?.walletTransactions?.total || 0;
+  const totalPages = Math.ceil(total / pageSize);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
   const getTransactionIcon = (type: Transaction['type']) => {
     switch (type) {
       case 'top_up':
-        return '↓';
       case 'transfer_in':
         return '←';
       case 'transfer_out':
+      case 'purchase':
         return '→';
-      case 'payment':
-        return '💳';
       default:
         return '•';
     }
@@ -39,7 +74,7 @@ export default function TransactionHistory({
       case 'transfer_in':
         return 'text-green-600';
       case 'transfer_out':
-      case 'payment':
+      case 'purchase':
         return 'text-red-600';
       default:
         return 'text-gray-600';
@@ -54,30 +89,15 @@ export default function TransactionHistory({
         return 'Transfer In';
       case 'transfer_out':
         return 'Transfer Out';
-      case 'payment':
-        return 'Payment';
+      case 'purchase':
+        return 'Purchase';
       default:
         return 'Transaction';
     }
   };
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    return new Intl.DateTimeFormat('tr-TR', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(date);
-  };
-
   return (
-    <div className="border rounded-lg p-6">
-      <h2 className="text-2xl font-bold mb-6">
-        Transaction History - {currency}
-      </h2>
-
+    <div className="py-6">
       <div className="space-y-4">
         {transactions.length === 0 ? (
           <p className="text-gray-500 text-center py-8">No transactions yet</p>
@@ -106,16 +126,32 @@ export default function TransactionHistory({
 
               <div className="text-right">
                 <p
-                  className={`font-bold ${getTransactionColor(transaction.type)}`}
+                  className={`font-bold ${getTransactionColor(
+                    transaction.type
+                  )}`}
                 >
-                  {transaction.type === 'top_up' || transaction.type === 'transfer_in' ? '+' : '-'}
-                  {formatMoney(transaction.amount, transaction.currency)}
+                  {transaction.type === 'top_up' ||
+                  transaction.type === 'transfer_in'
+                    ? '+'
+                    : '-'}
+                  {formatMoney(
+                    parseInt(transaction.amountMinor),
+                    transaction.currency
+                  )}
                 </p>
               </div>
             </div>
           ))
         )}
       </div>
+
+      {totalPages > 1 && (
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+        />
+      )}
     </div>
   );
 }

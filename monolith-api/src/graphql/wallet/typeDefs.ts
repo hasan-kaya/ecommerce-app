@@ -21,7 +21,6 @@ export const walletTypeDefs = `#graphql
     total: Int!
     page: Int!
     pageSize: Int!
-    hasMore: Boolean!
   }
 
   extend type Query {
