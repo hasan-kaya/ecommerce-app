@@ -19,7 +19,11 @@ export class CartRepository {
   }
 
   async saveCartItem(cartItem: CartItem) {
-    return this.cartItemRepository.save(cartItem);
+    const saved = await this.cartItemRepository.save(cartItem);
+    return this.cartItemRepository.findOne({
+      where: { id: saved.id },
+      relations: ['product', 'product.category'],
+    });
   }
 
   async addCartItem(cartId: string, productId: string, qty: number) {
@@ -28,7 +32,11 @@ export class CartRepository {
       product: { id: productId },
       qty,
     });
-    return this.cartItemRepository.save(cartItem);
+    const saved = await this.cartItemRepository.save(cartItem);
+    return this.cartItemRepository.findOne({
+      where: { id: saved.id },
+      relations: ['product', 'product.category'],
+    });
   }
 
   async delete(cartId: string) {

@@ -1,4 +1,5 @@
 import { authResolvers } from './auth';
+import { cartResolvers } from './cart';
 import { categoryResolvers } from './category';
 import { productResolvers } from './product';
 
@@ -8,6 +9,9 @@ export const resolvers = {
     ...categoryResolvers.Query,
     ...productResolvers.Query,
   },
-  Mutation: {},
+  Mutation: {
+    ...cartResolvers.Mutation,
+  },
   Product: productResolvers.Product,
+  CartItem: cartResolvers.CartItem,
 };

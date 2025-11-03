@@ -68,6 +68,7 @@ export default async function ProductsPage(props: {
             {products.map((product) => (
               <ProductCard
                 key={product.id}
+                id={product.id}
                 name={product.name}
                 price={Number(product.priceMinor)}
                 currency={product.currency}

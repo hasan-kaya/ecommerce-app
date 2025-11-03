@@ -1,6 +1,7 @@
 import { authTypeDefs } from './auth';
-import { productTypeDefs } from './product';
+import { cartTypeDefs } from './cart';
 import { categoryTypeDefs } from './category';
+import { productTypeDefs } from './product';
 
 const baseTypeDefs = `#graphql
   type Query {
@@ -12,4 +13,10 @@ const baseTypeDefs = `#graphql
   }
 `;
 
-export const typeDefs = [baseTypeDefs, authTypeDefs, productTypeDefs, categoryTypeDefs];
+export const typeDefs = [
+  baseTypeDefs,
+  authTypeDefs,
+  cartTypeDefs,
+  categoryTypeDefs,
+  productTypeDefs,
+];
