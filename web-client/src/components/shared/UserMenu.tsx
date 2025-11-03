@@ -92,14 +92,14 @@ export default function UserMenu() {
               className="block px-4 py-2 hover:bg-gray-100"
               onClick={() => setIsOpen(false)}
             >
-              Order History
+              Orders
             </Link>
             <Link
-              href="/wallet"
+              href="/wallets"
               className="block px-4 py-2 hover:bg-gray-100"
               onClick={() => setIsOpen(false)}
             >
-              Wallet
+              Wallets
             </Link>
             <Button
               onClick={handleLogout}
