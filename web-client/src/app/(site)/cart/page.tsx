@@ -1,67 +1,20 @@
-'use client';
-
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/app/api/auth/[...nextauth]/route';
 import CartItem from '@/components/features/cart/CartItem';
 import CartSummary from '@/components/features/cart/CartSummary';
+import { fetchCart } from '@/lib/services/cart';
 
-type CartItemType = {
-  id: string;
-  name: string;
-  price: number;
-  currency: string;
-  quantity: number;
-};
+export default async function CartPage() {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    redirect('/login');
+  }
 
-const initialCartItems: CartItemType[] = [
-  {
-    id: '1',
-    name: 'Wireless Headphones',
-    price: 9999,
-    currency: 'USD',
-    quantity: 1,
-  },
-  {
-    id: '2',
-    name: 'Smart Watch',
-    price: 29999,
-    currency: 'USD',
-    quantity: 2,
-  },
-  {
-    id: '3',
-    name: 'USB-C Cable',
-    price: 1999,
-    currency: 'USD',
-    quantity: 3,
-  },
-];
+  const cart = await fetchCart();
 
-export default function CartPage() {
-  const router = useRouter();
-  const [cartItems, setCartItems] = useState<CartItemType[]>(initialCartItems);
-
-  const handleUpdateQuantity = (id: string, quantity: number) => {
-    setCartItems((items) =>
-      items.map((item) => (item.id === id ? { ...item, quantity } : item))
-    );
-  };
-
-  const handleRemove = (id: string) => {
-    setCartItems((items) => items.filter((item) => item.id !== id));
-  };
-
-  const handleCheckout = () => {
-    router.push('/checkout');
-  };
-
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
-    0
-  );
-
-  if (cartItems.length === 0) {
+  if (!cart || cart.cartItems.length === 0) {
     return (
       <div className="container mx-auto px-4 py-16">
         <div className="text-center">
@@ -80,6 +33,8 @@ export default function CartPage() {
     );
   }
 
+  const totalPrice = Number(cart.totalPrice);
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
@@ -87,16 +42,13 @@ export default function CartPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
           <div className="border rounded-lg p-4">
-            {cartItems.map((item) => (
+            {cart.cartItems.map((item) => (
               <CartItem
                 key={item.id}
-                id={item.id}
-                name={item.name}
-                price={item.price}
-                currency={item.currency}
-                quantity={item.quantity}
-                onUpdateQuantity={handleUpdateQuantity}
-                onRemove={handleRemove}
+                name={item.product.name}
+                price={Number(item.product.priceMinor)}
+                currency={item.product.currency}
+                quantity={item.qty}
               />
             ))}
           </div>
@@ -110,11 +62,7 @@ export default function CartPage() {
         </div>
 
         <div className="lg:col-span-1">
-          <CartSummary
-            subtotal={subtotal}
-            currency="USD"
-            onCheckout={handleCheckout}
-          />
+          <CartSummary subtotal={totalPrice} currency="USD" />
         </div>
       </div>
     </div>

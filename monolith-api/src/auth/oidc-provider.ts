@@ -53,7 +53,7 @@ const configuration = {
     };
   },
   pkce: {
-    required: () => false,
+    required: () => true, 
   },
   features: {
     devInteractions: { enabled: false },

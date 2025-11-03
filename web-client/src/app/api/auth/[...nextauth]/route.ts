@@ -52,6 +52,7 @@ const webClientProvider = {
 
 export const authOptions = {
   debug: true,
+  secret: process.env.NEXTAUTH_SECRET || 'development-secret-key-change-in-production',
   providers: [webClientProvider as OAuthConfig<Profile>],
   callbacks: {
     async jwt({

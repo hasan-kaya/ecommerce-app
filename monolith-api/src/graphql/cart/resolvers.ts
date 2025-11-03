@@ -9,6 +9,13 @@ interface AddToCartArgs {
 }
 
 export const cartResolvers = {
+  Query: {
+    cart: async (_: any, __: any, context: GraphQLContext) => {
+      const userId = requireAuth(context);
+      const cart = await cartService.getUserCart(userId);
+      return cart;
+    },
+  },
   Mutation: {
     addToCart: async (_: any, { productId, qty }: AddToCartArgs, context: GraphQLContext) => {
       const userId = requireAuth(context);

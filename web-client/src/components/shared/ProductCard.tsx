@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import Button from '@/components/ui/Button';
 import { addToCartAction } from '@/app/actions/cart';
+import { formatMoney } from '@/lib/utils/money';
 
 type ProductCardProps = {
   id: string;
@@ -67,7 +68,7 @@ export default function ProductCard({
 
       <div className="flex items-center justify-between">
         <span className="text-xl font-bold">
-          {(price / 100).toFixed(2)} {currency}
+          {formatMoney(price, currency)}
         </span>
         <Button onClick={handleAddToCart} isLoading={isAdding}>
           Add to Cart

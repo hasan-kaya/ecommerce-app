@@ -1,16 +1,13 @@
 import Button from '@/components/ui/Button';
+import Link from 'next/link';
+import { formatMoney } from '@/lib/utils/money';
 
 type CartSummaryProps = {
   subtotal: number;
   currency: string;
-  onCheckout: () => void;
 };
 
-export default function CartSummary({
-  subtotal,
-  currency,
-  onCheckout,
-}: CartSummaryProps) {
+export default function CartSummary({ subtotal, currency }: CartSummaryProps) {
   const shipping = 0;
   const total = subtotal + shipping;
 
@@ -22,30 +19,26 @@ export default function CartSummary({
         <div className="flex justify-between">
           <span className="text-gray-600">Subtotal</span>
           <span className="font-semibold">
-            {(subtotal / 100).toFixed(2)} {currency}
+            {formatMoney(subtotal, currency)}
           </span>
         </div>
         <div className="flex justify-between">
           <span className="text-gray-600">Shipping</span>
           <span className="font-semibold">
-            {shipping === 0 ? 'Free' : `${(shipping / 100).toFixed(2)} ${currency}`}
+            {shipping === 0 ? 'Free' : formatMoney(shipping, currency)}
           </span>
         </div>
         <div className="border-t pt-3 flex justify-between text-lg">
           <span className="font-bold">Total</span>
-          <span className="font-bold">
-            {(total / 100).toFixed(2)} {currency}
-          </span>
+          <span className="font-bold">{formatMoney(total, currency)}</span>
         </div>
       </div>
 
-      <Button
-        onClick={onCheckout}
-        fullWidth
-        size="lg"
-      >
-        Proceed to Checkout
-      </Button>
+      <Link href="/checkout">
+        <Button fullWidth size="lg">
+          Proceed to Checkout
+        </Button>
+      </Link>
     </div>
   );
 }

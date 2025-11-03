@@ -8,6 +8,11 @@ export const cartTypeDefs = `#graphql
   type Cart {
     id: ID!
     cartItems: [CartItem!]!
+    totalPrice: String!
+  }
+
+  extend type Query {
+    cart: Cart
   }
 
   extend type Mutation {

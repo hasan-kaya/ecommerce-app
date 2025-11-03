@@ -6,6 +6,7 @@ import { productResolvers } from './product';
 export const resolvers = {
   Query: {
     ...authResolvers.Query,
+    ...cartResolvers.Query,
     ...categoryResolvers.Query,
     ...productResolvers.Query,
   },

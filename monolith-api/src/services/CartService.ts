@@ -25,12 +25,25 @@ export class CartService {
     });
   }
 
+  private calculateTotalPrice(cartItems: CartItem[]): string {
+    const total = cartItems.reduce((sum, item) => {
+      return sum + Number(item.product.price_minor) * item.qty;
+    }, 0);
+    return total.toString();
+  }
+
   public async getUserCart(userId: string) {
     const cart = await this.cartRepository.findByUserId(userId);
     if (!cart) {
       throw new AppError('Cart not found', 404);
     }
-    return cart;
+
+    const totalPrice = this.calculateTotalPrice(cart.cartItems);
+
+    return {
+      ...cart,
+      totalPrice,
+    };
   }
 
   public async clearCart(cartId: string) {

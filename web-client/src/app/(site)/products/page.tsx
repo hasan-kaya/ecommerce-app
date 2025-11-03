@@ -1,12 +1,8 @@
 import ProductCard from '@/components/shared/ProductCard';
 import ProductFilters from '@/components/features/products/ProductFilters';
 import Pagination from '@/components/features/products/Pagination';
-import { getClient } from '@/lib/apollo-client';
-import { GET_PRODUCTS } from '@/graphql/queries/products';
-import { GET_CATEGORIES } from '@/graphql/queries/categories';
-import type { Category, Product, ProductsResponse } from '@/graphql/types';
-
-const ITEMS_PER_PAGE = 12;
+import { fetchCategories } from '@/lib/services/category';
+import { fetchProducts } from '@/lib/services/product';
 
 type SearchParams = Promise<{
   search?: string;
@@ -25,30 +21,13 @@ export default async function ProductsPage(props: {
   const selectedCategory = searchParams.category || null;
   const currentPage = Number(searchParams.page) || 1;
 
-  const client = getClient();
+  const categories = await fetchCategories();
 
-  // Fetch categories
-  const { data: categoriesData } = await client.query<{
-    categories: Category[];
-  }>({
-    query: GET_CATEGORIES,
+  const { products, totalPages } = await fetchProducts({
+    selectedCategory,
+    searchQuery,
+    currentPage,
   });
-  const categories = categoriesData?.categories || [];
-
-  // Fetch products
-  const { data } = await client.query<{ products: ProductsResponse }>({
-    query: GET_PRODUCTS,
-    variables: {
-      category: selectedCategory,
-      search: searchQuery,
-      page: currentPage,
-      pageSize: ITEMS_PER_PAGE,
-    },
-  });
-
-  const response = data?.products;
-  const products: Product[] = response?.products || [];
-  const totalPages = response?.totalPages || 1;
 
   return (
     <div className="container mx-auto px-4 py-8">
