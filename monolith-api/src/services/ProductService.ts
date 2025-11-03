@@ -4,8 +4,13 @@ import { ProductRepository } from '@/repositories/ProductRepository';
 export class ProductService {
   private productRepository = new ProductRepository();
 
-  async getAllProducts(categorySlug?: string, search?: string) {
-    return this.productRepository.findAll(categorySlug, search);
+  async getProducts(
+    page: number = 1,
+    pageSize: number = 10,
+    categorySlug?: string,
+    search?: string
+  ) {
+    return this.productRepository.findWithPagination(page, pageSize, categorySlug, search);
   }
 
   async getProduct(productId: string) {

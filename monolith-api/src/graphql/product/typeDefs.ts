@@ -15,7 +15,20 @@ export const productTypeDefs = `#graphql
     slug: String!
   }
 
+  type ProductsResponse {
+    products: [Product!]!
+    total: Int!
+    page: Int!
+    pageSize: Int!
+    totalPages: Int!
+  }
+
   extend type Query {
-    products(category: String, search: String): [Product!]!
+    products(
+      category: String
+      search: String
+      page: Int
+      pageSize: Int
+    ): ProductsResponse!
   }
 `;

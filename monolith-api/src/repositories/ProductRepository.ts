@@ -6,7 +6,12 @@ import { Product } from '@/entities/Product';
 export class ProductRepository {
   private repository = AppDataSource.getRepository(Product);
 
-  async findAll(categorySlug?: string, search?: string) {
+  async findWithPagination(
+    page: number = 1,
+    pageSize: number = 10,
+    categorySlug?: string,
+    search?: string
+  ) {
     const where: FindOptionsWhere<Product> = {};
 
     if (categorySlug) {
@@ -17,10 +22,21 @@ export class ProductRepository {
       where.name = ILike(`%${search}%`);
     }
 
-    return this.repository.find({
+    const [products, total] = await this.repository.findAndCount({
       where,
       relations: { category: true },
+      take: pageSize,
+      skip: (page - 1) * pageSize,
+      order: { id: 'ASC' },
     });
+
+    return {
+      products,
+      total,
+      page,
+      pageSize,
+      totalPages: Math.ceil(total / pageSize),
+    };
   }
 
   async findById(id: string) {

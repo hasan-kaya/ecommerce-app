@@ -5,14 +5,14 @@ import SortSelect from '@/components/features/products/SortSelect';
 import { getClient } from '@/lib/apollo-client';
 import { GET_PRODUCTS } from '@/graphql/queries/products';
 
-const ITEMS_PER_PAGE = 6;
+const ITEMS_PER_PAGE = 12;
 
 type SearchParams = Promise<{
   search?: string;
   category?: string;
+  page?: string;
   minPrice?: string;
   maxPrice?: string;
-  page?: string;
   sort?: string;
 }>;
 
@@ -30,27 +30,41 @@ interface Product {
   };
 }
 
+interface ProductsResponse {
+  products: Product[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
+
 export default async function ProductsPage(props: {
   searchParams: SearchParams;
 }) {
   const searchParams = await props.searchParams;
   const searchQuery = searchParams.search || '';
   const selectedCategory = searchParams.category || null;
-  const minPrice = Number(searchParams.minPrice) || 0;
-  const maxPrice = Number(searchParams.maxPrice) || 100000;
   const currentPage = Number(searchParams.page) || 1;
+  const minPrice = Number(searchParams.minPrice) || 0;
+  const maxPrice = Number(searchParams.maxPrice) || 0;
   const sortBy = searchParams.sort || 'default';
 
   const client = getClient();
-  const { data } = await client.query<{ products: Product[] }>({
+  const { data } = await client.query<{ products: ProductsResponse }>({
     query: GET_PRODUCTS,
     variables: {
       category: selectedCategory,
       search: searchQuery,
+      page: currentPage,
+      pageSize: ITEMS_PER_PAGE,
     },
   });
 
-  const allProducts: Product[] = data?.products || [];
+  const response = data?.products;
+  const products: Product[] = response?.products || [];
+  const total = response?.total || 0;
+  const totalPages = response?.totalPages || 1;
+  const start = (currentPage - 1) * ITEMS_PER_PAGE;
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -70,13 +84,13 @@ export default async function ProductsPage(props: {
         <main className="lg:col-span-3">
           <div className="flex items-center justify-between mb-6">
             <div className="text-gray-600">
-              Showing {allProducts.length} of {allProducts.length} products
+              Showing {start}-{start + products.length} of {total} products
             </div>
             <SortSelect currentSort={sortBy} />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {allProducts.map((product) => (
+            {products.map((product) => (
               <ProductCard
                 key={product.id}
                 name={product.name}
@@ -86,13 +100,15 @@ export default async function ProductsPage(props: {
             ))}
           </div>
 
-          {allProducts.length === 0 && (
+          {products.length === 0 && (
             <div className="text-center py-12 text-gray-500">
               No products found matching your filters.
             </div>
           )}
-          {/* TODO: Pagination */}
-          {1 > 1 && <Pagination currentPage={currentPage} totalPages={1} />}
+
+          {totalPages > 1 && (
+            <Pagination currentPage={currentPage} totalPages={totalPages} />
+          )}
         </main>
       </div>
     </div>
