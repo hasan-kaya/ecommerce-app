@@ -1,11 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import { useMutation } from '@apollo/client/react';
 import Button from '@/components/ui/Button';
-import FormSelect from '@/components/ui/FormSelect';
 import FormField from '@/components/ui/FormField';
 import Modal from '@/components/ui/Modal';
 import { Wallet } from '@/graphql/types';
+import { TOP_UP_WALLET } from '@/graphql/mutations/wallet';
+import { GET_WALLETS } from '@/graphql/queries/wallet';
 
 type TopUpModalProps = {
   isOpen: boolean;
@@ -20,33 +22,54 @@ export default function TopUpModal({
   wallets,
   selectedWalletId,
 }: TopUpModalProps) {
-  const [walletId, setWalletId] = useState(selectedWalletId || '');
   const [amount, setAmount] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const selectedWallet = wallets.find((w) => w.id === selectedWalletId);
+
+  const [topUpWallet, { loading }] = useMutation(TOP_UP_WALLET, {
+    refetchQueries: [{ query: GET_WALLETS }],
+    onCompleted: () => {
+      alert('Top up successful!');
+      onClose();
+      setAmount('');
+    },
+    onError: (error) => {
+      alert(`Error: ${error.message}`);
+    },
+  });
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // API call will be added later
-    alert(`Top up ${amount} to wallet ${walletId}`);
-    onClose();
-    setAmount('');
+
+    if (!selectedWallet) {
+      alert('Wallet not found');
+      return;
+    }
+
+    // Convert amount to minor units (e.g., 100.50 -> 10050)
+    const amountMinor = Math.round(parseFloat(amount) * 100);
+
+    await topUpWallet({
+      variables: {
+        currency: selectedWallet.currency,
+        amountMinor,
+      },
+    });
   };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Top Up Wallet">
       <form onSubmit={handleSubmit} className="space-y-4">
-        <FormSelect
-          label="Select Wallet"
-          value={walletId}
-          onChange={(e) => setWalletId(e.target.value)}
-          required
-        >
-          <option value="">Choose a wallet</option>
-          {wallets.map((wallet) => (
-            <option key={wallet.id} value={wallet.id}>
-              {wallet.currency}
-            </option>
-          ))}
-        </FormSelect>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Wallet
+          </label>
+          <div className="px-3 py-2 border border-gray-300 rounded-md bg-gray-50">
+            <span className="font-semibold">
+              {selectedWallet?.currency || 'N/A'}
+            </span>
+          </div>
+        </div>
 
         <FormField
           label="Amount"
@@ -63,8 +86,8 @@ export default function TopUpModal({
           <Button type="button" onClick={onClose} variant="secondary" fullWidth>
             Cancel
           </Button>
-          <Button type="submit" fullWidth>
-            Top Up
+          <Button type="submit" fullWidth disabled={loading}>
+            {loading ? 'Processing...' : 'Top Up'}
           </Button>
         </div>
       </form>

@@ -12,6 +12,17 @@ export const walletResolvers = {
       return wallets || [];
     },
   },
+  Mutation: {
+    topUpWallet: async (
+      _: unknown,
+      { currency, amountMinor }: { currency: string; amountMinor: number },
+      context: GraphQLContext
+    ) => {
+      const userId = requireAuth(context);
+      const wallet = await walletService.topUpUserWallet(userId, currency, amountMinor);
+      return wallet;
+    },
+  },
   Wallet: {
     balanceMinor: (parent: Wallet) => parent.balance_minor.toString(),
     createdAt: (parent: Wallet) => parent.createdAt.toISOString(),

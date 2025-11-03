@@ -1,3 +1,4 @@
+import { AppError } from '@/common/middleware/error';
 import { redisClient } from '@/config/redis';
 import { CurrencyRepository } from '@/repositories/CurrencyRepository';
 
@@ -32,14 +33,14 @@ export class CurrencyService {
 
     const cached = await redisClient.get(this.CACHE_KEY);
     if (!cached) {
-      throw new Error('Currency cache not available');
+      throw new AppError('Currency cache not available');
     }
 
     const rates: Record<string, number> = JSON.parse(cached);
     const rate = rates[currencyCode];
 
     if (rate === undefined) {
-      throw new Error(`Currency not found: ${currencyCode}`);
+      throw new AppError(`Currency not found: ${currencyCode}`);
     }
 
     return rate;
@@ -80,7 +81,7 @@ export class CurrencyService {
 
     const cached = await redisClient.get(this.CACHE_KEY);
     if (!cached) {
-      throw new Error('Currency cache not available');
+      throw new AppError('Currency cache not available');
     }
 
     const rates: Record<string, number> = JSON.parse(cached);

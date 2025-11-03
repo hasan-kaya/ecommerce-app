@@ -81,8 +81,6 @@ export default function WalletsPage() {
   const selectedWallet = wallets.find((w) => w.id === selectedWalletForHistory);
   const filteredTransactions = mockTransactions;
 
-  console.log('wallets', wallets);
-
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">My Wallets</h1>

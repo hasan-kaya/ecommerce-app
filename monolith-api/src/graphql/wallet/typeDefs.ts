@@ -9,4 +9,8 @@ export const walletTypeDefs = `#graphql
   extend type Query {
     wallets: [Wallet!]!
   }
+
+  extend type Mutation {
+    topUpWallet(currency: String!, amountMinor: Int!): Wallet!
+  }
 `;

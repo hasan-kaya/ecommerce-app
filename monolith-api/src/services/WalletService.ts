@@ -35,6 +35,9 @@ export class WalletService {
     }
 
     const updatedWallet = await this.walletRepository.topUpWallet(userId, currency, amountMinor);
+    if (!updatedWallet) {
+      throw new AppError('Failed to top up wallet', 500);
+    }
 
     await this.transactionRepository.createTransaction(
       wallet.id,
