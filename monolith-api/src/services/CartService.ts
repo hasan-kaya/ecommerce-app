@@ -1,4 +1,5 @@
 import { AppError } from '@/common/middleware/error';
+import { Cart } from '@/entities/Cart';
 import { CartItem } from '@/entities/CartItem';
 import { Product } from '@/entities/Product';
 import { CartRepository } from '@/repositories/CartRepository';
@@ -8,9 +9,31 @@ export class CartService {
   private cartRepository = new CartRepository();
   private productService = new ProductService();
 
-  private checkStockForAdd(product: Product, existingQty: number, newQty: number) {
-    if (product.stock_qty < existingQty + newQty) {
-      throw new AppError('Not enough stock', 400);
+  private validateQuantity(qty: number) {
+    if (qty < 1) {
+      throw new AppError('Quantity must be at least 1', 400);
+    }
+  }
+
+  private async getOrCreateCart(userId: string) {
+    let cart = await this.cartRepository.findByUserId(userId);
+    if (!cart) {
+      cart = await this.cartRepository.createCart(userId);
+    }
+    return cart;
+  }
+
+  private findCartItem(cart: Cart, cartItemId: string) {
+    const cartItem = cart.cartItems.find((item) => item.id === cartItemId);
+    if (!cartItem) {
+      throw new AppError('Cart item not found', 404);
+    }
+    return cartItem;
+  }
+
+  private checkStock(product: Product, requestedQty: number) {
+    if (product.stock_qty < requestedQty) {
+      throw new AppError(`Only ${product.stock_qty} units available for ${product.name}`, 400);
     }
   }
 
@@ -50,25 +73,50 @@ export class CartService {
     await this.cartRepository.delete(cartId);
   }
 
-  async addToCart(userId: string, productId: string, qty: number) {
-    const product = await this.productService.getProduct(productId);
+  public async updateCartItemQuantity(userId: string, cartItemId: string, qty: number) {
+    this.validateQuantity(qty);
 
-    let cart = await this.cartRepository.findByUserId(userId);
-
-    let userAddedQty = 0;
-    if (cart) {
-      userAddedQty = cart?.cartItems.find((ci) => ci.product.id === productId)?.qty || 0;
-    }
-
-    this.checkStockForAdd(product, userAddedQty, qty);
-
+    const cart = await this.cartRepository.findByUserId(userId);
     if (!cart) {
-      cart = await this.cartRepository.createCart(userId);
+      throw new AppError('Cart not found', 404);
     }
 
-    const existingItem = cart?.cartItems.find((ci) => ci.product.id === productId);
+    const cartItem = this.findCartItem(cart, cartItemId);
+    this.checkStock(cartItem.product, qty);
+
+    cartItem.qty = qty;
+    await this.cartRepository.saveCartItem(cartItem);
+
+    return this.getUserCart(userId);
+  }
+
+  public async removeCartItem(userId: string, cartItemId: string) {
+    const cart = await this.cartRepository.findByUserId(userId);
+    if (!cart) {
+      throw new AppError('Cart not found', 404);
+    }
+
+    this.findCartItem(cart, cartItemId);
+
+    await this.cartRepository.removeCartItem(cartItemId);
+
+    return this.getUserCart(userId);
+  }
+
+  async addToCart(userId: string, productId: string, qty: number) {
+    this.validateQuantity(qty);
+
+    const product = await this.productService.getProduct(productId);
+    const cart = await this.getOrCreateCart(userId);
+
+    const existingItem = cart.cartItems.find((ci) => ci.product.id === productId);
+    const currentQty = existingItem?.qty || 0;
+    const newTotalQty = currentQty + qty;
+
+    this.checkStock(product, newTotalQty);
+
     if (existingItem) {
-      existingItem.qty += qty;
+      existingItem.qty = newTotalQty;
       return this.cartRepository.saveCartItem(existingItem);
     }
 

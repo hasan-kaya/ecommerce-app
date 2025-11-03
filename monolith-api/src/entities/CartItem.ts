@@ -1,4 +1,11 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 import { Cart } from './Cart';
 import { Product } from './Product';
@@ -24,4 +31,7 @@ export class CartItem {
 
   @Column('int')
   qty!: number;
+
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt!: Date;
 }

@@ -23,6 +23,26 @@ export const cartResolvers = {
 
       return cartItem;
     },
+    updateCartItemQuantity: async (
+      _: any,
+      { cartItemId, qty }: { cartItemId: string; qty: number },
+      context: GraphQLContext
+    ) => {
+      const userId = requireAuth(context);
+      const cart = await cartService.updateCartItemQuantity(userId, cartItemId, qty);
+
+      return cart;
+    },
+    removeCartItem: async (
+      _: any,
+      { cartItemId }: { cartItemId: string },
+      context: GraphQLContext
+    ) => {
+      const userId = requireAuth(context);
+      const cart = await cartService.removeCartItem(userId, cartItemId);
+
+      return cart;
+    },
   },
   CartItem: {
     product: (parent: any) => parent.product,

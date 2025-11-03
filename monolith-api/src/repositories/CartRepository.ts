@@ -7,10 +7,17 @@ export class CartRepository {
   private cartItemRepository = AppDataSource.getRepository(CartItem);
 
   async findByUserId(userId: string) {
-    return this.cartRepository.findOne({
+    const cart = await this.cartRepository.findOne({
       where: { user: { id: userId } },
       relations: ['cartItems', 'cartItems.product'],
+      order: {
+        cartItems: {
+          createdAt: 'ASC',
+        },
+      },
     });
+
+    return cart;
   }
 
   async createCart(userId: string) {
@@ -37,6 +44,9 @@ export class CartRepository {
       where: { id: saved.id },
       relations: ['product', 'product.category'],
     });
+  }
+  async removeCartItem(cartItemId: string) {
+    return this.cartItemRepository.delete(cartItemId);
   }
 
   async delete(cartId: string) {

@@ -17,5 +17,7 @@ export const cartTypeDefs = `#graphql
 
   extend type Mutation {
     addToCart(productId: ID!, qty: Int!): CartItem!
+    updateCartItemQuantity(cartItemId: ID!, qty: Int!): Cart!
+    removeCartItem(cartItemId: ID!): Cart!
   }
 `;
