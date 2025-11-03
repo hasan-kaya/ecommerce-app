@@ -1,6 +1,7 @@
 import { authTypeDefs } from './auth';
 import { cartTypeDefs } from './cart';
 import { categoryTypeDefs } from './category';
+import { orderTypeDefs } from './order';
 import { productTypeDefs } from './product';
 import { walletTypeDefs } from './wallet';
 
@@ -19,6 +20,7 @@ export const typeDefs = [
   authTypeDefs,
   cartTypeDefs,
   categoryTypeDefs,
+  orderTypeDefs,
   productTypeDefs,
   walletTypeDefs,
 ];
