@@ -9,13 +9,13 @@ export class ProductService {
 
   private async convertProductPrices(product: Product) {
     const priceInBase = await this.currencyService.convertToBase(
-      Number(product.price_minor),
+      Number(product.priceMinor),
       product.currency
     );
 
     return {
       ...product,
-      price_minor: priceInBase,
+      priceMinor: priceInBase,
       currency: this.currencyService.getBaseCurrency(),
     };
   }

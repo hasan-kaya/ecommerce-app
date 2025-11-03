@@ -26,7 +26,7 @@ export class OrderService {
     // 2. Check Wallet Balance
     let totalPriceMinor = 0;
     for (const cartItem of cart.cartItems) {
-      const itemTotal = cartItem.product.price_minor * cartItem.qty;
+      const itemTotal = cartItem.product.priceMinor * cartItem.qty;
       totalPriceMinor += itemTotal;
     }
 
@@ -37,14 +37,14 @@ export class OrderService {
       const orderItem = new OrderItem();
       orderItem.product = cartItem.product;
       orderItem.qty = cartItem.qty;
-      orderItem.price_minor = cartItem.product.price_minor;
+      orderItem.priceMinor = cartItem.product.priceMinor;
       orderItem.currency = walletCurrency;
       return orderItem;
     });
 
     const order = new Order();
     order.user = { id: userId } as User;
-    order.price_minor = totalPriceMinor;
+    order.priceMinor = totalPriceMinor;
     order.currency = walletCurrency;
     order.status = OrderStatus.PENDING;
     order.items = orderItems;

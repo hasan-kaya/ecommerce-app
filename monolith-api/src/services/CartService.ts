@@ -52,7 +52,7 @@ export class CartService {
 
   private async convertCartItemPrice(item: CartItem) {
     const priceInBase = await this.currencyService.convertToBase(
-      Number(item.product.price_minor),
+      Number(item.product.priceMinor),
       item.product.currency
     );
 
@@ -60,7 +60,7 @@ export class CartService {
       ...item,
       product: {
         ...item.product,
-        price_minor: priceInBase,
+        priceMinor: priceInBase,
         currency: this.currencyService.getBaseCurrency(),
       },
     };
@@ -70,7 +70,7 @@ export class CartService {
     let totalInBase = 0;
 
     for (const item of cartItems) {
-      const itemTotal = Number(item.product.price_minor) * item.qty;
+      const itemTotal = Number(item.product.priceMinor) * item.qty;
       const itemTotalInBase = await this.currencyService.convertToBase(
         itemTotal,
         item.product.currency

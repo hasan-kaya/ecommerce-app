@@ -21,7 +21,7 @@ export class WalletTransactionRepository {
     const transaction = this.repository.create({
       wallet: { id: walletId },
       type,
-      amount_minor: amountMinor,
+      amountMinor,
       currency,
       description,
       relatedTransactionId,

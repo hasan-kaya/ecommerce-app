@@ -23,8 +23,8 @@ export class Product {
   @Column({ length: 255, unique: true })
   slug!: string;
 
-  @Column('bigint')
-  price_minor!: number;
+  @Column('bigint', { name: 'price_minor' })
+  priceMinor!: number;
 
   @ManyToOne(() => Currency, {
     nullable: false,

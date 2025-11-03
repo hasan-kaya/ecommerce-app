@@ -1,4 +1,5 @@
 import { Wallet } from '@/entities/Wallet';
+import { WalletTransaction } from '@/entities/WalletTransaction';
 import { GraphQLContext, requireAuth } from '@/graphql/utils/auth';
 import { WalletService } from '@/services/WalletService';
 
@@ -10,6 +11,14 @@ export const walletResolvers = {
       const userId = requireAuth(context);
       const wallets = await walletService.getUserWallets(userId);
       return wallets || [];
+    },
+    walletTransactions: async (
+      _: unknown,
+      { currency, page, pageSize }: { currency: string; page?: number; pageSize?: number },
+      context: GraphQLContext
+    ) => {
+      const userId = requireAuth(context);
+      return walletService.getWalletTransactions(userId, currency, page, pageSize);
     },
   },
   Mutation: {
@@ -26,5 +35,8 @@ export const walletResolvers = {
   Wallet: {
     balanceMinor: (parent: Wallet) => parent.balance_minor.toString(),
     createdAt: (parent: Wallet) => parent.createdAt.toISOString(),
+  },
+  WalletTransaction: {
+    createdAt: (parent: WalletTransaction) => parent.createdAt.toISOString(),
   },
 };

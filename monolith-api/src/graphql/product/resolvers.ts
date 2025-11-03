@@ -16,7 +16,6 @@ export const productResolvers = {
     },
   },
   Product: {
-    priceMinor: (parent: any) => parent.price_minor.toString(),
     stockQty: (parent: any) => parent.stock_qty,
   },
 };

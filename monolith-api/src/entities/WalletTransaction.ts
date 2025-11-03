@@ -36,8 +36,8 @@ export class WalletTransaction {
   })
   type!: TransactionType;
 
-  @Column('bigint', { default: 0 })
-  amount_minor!: number;
+  @Column('bigint', { default: 0, name: 'amount_minor' })
+  amountMinor!: number;
 
   @Column({ length: 3 })
   currency!: string;

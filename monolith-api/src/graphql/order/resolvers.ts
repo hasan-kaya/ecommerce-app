@@ -16,10 +16,7 @@ export const orderResolvers = {
     },
   },
   Order: {
-    priceMinor: (parent: any) => parent.price_minor.toString(),
+    status: (parent: any) => parent.status.toUpperCase(),
     createdAt: (parent: any) => parent.created_at,
-  },
-  OrderItem: {
-    priceMinor: (parent: any) => parent.price_minor.toString(),
   },
 };

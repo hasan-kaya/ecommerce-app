@@ -22,5 +22,4 @@ export const resolvers = {
   CartItem: cartResolvers.CartItem,
   Wallet: walletResolvers.Wallet,
   Order: orderResolvers.Order,
-  OrderItem: orderResolvers.OrderItem,
 };

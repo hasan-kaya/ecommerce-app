@@ -13,6 +13,35 @@ export class WalletService {
     return this.walletRepository.findByUserId(userId);
   }
 
+  public async getWalletTransactions(
+    userId: string,
+    currency: string,
+    page: number = 1,
+    pageSize: number = 50
+  ) {
+    // Find user's wallet by currency
+    const wallet = await this.walletRepository.findByUserIdAndCurrency(userId, currency);
+
+    if (!wallet) {
+      throw new AppError(`Wallet not found for currency: ${currency}`, 404);
+    }
+
+    const offset = (page - 1) * pageSize;
+    const [transactions, total] = await this.transactionRepository.findByWalletIdPaginated(
+      wallet.id,
+      pageSize,
+      offset
+    );
+
+    return {
+      transactions,
+      total,
+      page,
+      pageSize,
+      hasMore: offset + transactions.length < total,
+    };
+  }
+
   public async createInitialWallets(userId: string) {
     const currencies = await this.currencyRepository.findAll();
 

@@ -32,8 +32,8 @@ export class Order {
   @JoinColumn({ name: 'user_id' })
   user!: User;
 
-  @Column('bigint')
-  price_minor!: number;
+  @Column('bigint', { name: 'price_minor' })
+  priceMinor!: number;
 
   @Column({ length: 3 })
   currency!: string;
