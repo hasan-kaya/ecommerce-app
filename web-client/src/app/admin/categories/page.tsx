@@ -1,37 +1,39 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQuery, useMutation } from '@apollo/client/react';
 import DataTable, { Column } from '@/components/ui/DataTable';
 import CategoryForm from '@/components/features/admin/categories/CategoryForm';
+import { GET_CATEGORIES } from '@/graphql/queries/categories';
+import { DELETE_CATEGORY } from '@/graphql/mutations/category';
+import { Category } from '@/graphql/types';
 
-interface Category {
-  id: string;
-  name: string;
-  slug: string;
+interface CategoriesResponse {
+  categories: {
+    categories: Category[];
+    total: number;
+    page: number;
+    pageSize: number;
+    totalPages: number;
+  };
 }
 
 export default function CategoriesPage() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
-  // Mock data - replace with API call
-  useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      // Generate mock data for pagination demo
-      const mockCategories = Array.from({ length: 25 }, (_, i) => ({
-        id: String(i + 1),
-        name: `Category ${i + 1}`,
-        slug: `category-${i + 1}`,
-      }));
-      setCategories(mockCategories);
-      setIsLoading(false);
-    }, 500);
-  }, []);
+  const { data, loading, refetch } = useQuery<CategoriesResponse>(
+    GET_CATEGORIES,
+    {
+      variables: { page: currentPage, pageSize },
+    }
+  );
+  const [deleteCategory] = useMutation(DELETE_CATEGORY);
+
+  const categories = data?.categories?.categories || [];
+  const totalPages = data?.categories?.totalPages || 1;
 
   const handleCreate = () => {
     setEditingCategory(null);
@@ -43,45 +45,22 @@ export default function CategoriesPage() {
     setIsModalOpen(true);
   };
 
-  const handleSubmit = async (formData: { name: string; slug: string }) => {
-    // TODO: API call
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    if (editingCategory) {
-      // Update
-      setCategories((prev) =>
-        prev.map((cat) =>
-          cat.id === editingCategory.id ? { ...cat, ...formData } : cat
-        )
-      );
-    } else {
-      // Create
-      const newCategory = {
-        id: Date.now().toString(),
-        ...formData,
-      };
-      setCategories((prev) => [...prev, newCategory]);
-    }
-
+  const handleSuccess = async () => {
+    await refetch({ page: currentPage, pageSize });
     setIsModalOpen(false);
   };
 
   const handleDelete = async (category: Category) => {
     try {
-      // TODO: API call
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      setCategories((prev) => prev.filter((cat) => cat.id !== category.id));
+      await deleteCategory({
+        variables: { id: category.id },
+      });
+      await refetch({ page: currentPage, pageSize });
     } catch (error) {
       console.error('Failed to delete category:', error);
       alert('Failed to delete category');
     }
   };
-
-  // Pagination logic
-  const totalPages = Math.ceil(categories.length / pageSize);
-  const startIndex = (currentPage - 1) * pageSize;
-  const endIndex = startIndex + pageSize;
-  const paginatedCategories = categories.slice(startIndex, endIndex);
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
@@ -94,31 +73,27 @@ export default function CategoriesPage() {
   ];
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Categories</h1>
-        <p className="mt-2 text-gray-600">Manage product categories</p>
-      </div>
-
+    <>
       <DataTable
-        data={paginatedCategories}
+        data={categories}
         columns={columns}
         onEdit={handleEdit}
         onDelete={handleDelete}
         onCreate={handleCreate}
         createLabel="Create Category"
-        isLoading={isLoading}
+        isLoading={loading}
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={handlePageChange}
+        title="Categories"
+        description="Manage product categories"
       />
-
       <CategoryForm
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         category={editingCategory}
-        onSubmit={handleSubmit}
+        onSuccess={handleSuccess}
       />
-    </div>
+    </>
   );
 }

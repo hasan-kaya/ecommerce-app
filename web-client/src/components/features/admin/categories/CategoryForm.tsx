@@ -1,23 +1,20 @@
 'use client';
 
 import { useEffect } from 'react';
+import { useMutation } from '@apollo/client/react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import Modal from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
 import FormField from '@/components/ui/FormField';
-
-interface Category {
-  id: string;
-  name: string;
-  slug: string;
-}
+import { CREATE_CATEGORY, UPDATE_CATEGORY } from '@/graphql/mutations/category';
+import { Category } from '@/graphql/types';
 
 interface CategoryFormProps {
   isOpen: boolean;
   onClose: () => void;
   category?: Category | null;
-  onSubmit: (data: { name: string; slug: string }) => Promise<void>;
+  onSuccess: () => void;
 }
 
 const validationSchema = Yup.object({
@@ -27,7 +24,10 @@ const validationSchema = Yup.object({
     .max(50, 'Name must be less than 50 characters'),
   slug: Yup.string()
     .required('Slug is required')
-    .matches(/^[a-z0-9-]+$/, 'Slug must contain only lowercase letters, numbers, and hyphens')
+    .matches(
+      /^[a-z0-9-]+$/,
+      'Slug must contain only lowercase letters, numbers, and hyphens'
+    )
     .min(2, 'Slug must be at least 2 characters')
     .max(50, 'Slug must be less than 50 characters'),
 });
@@ -43,8 +43,10 @@ export default function CategoryForm({
   isOpen,
   onClose,
   category,
-  onSubmit,
+  onSuccess,
 }: CategoryFormProps) {
+  const [createCategory] = useMutation(CREATE_CATEGORY);
+  const [updateCategory] = useMutation(UPDATE_CATEGORY);
   const formik = useFormik({
     initialValues: {
       name: '',
@@ -53,8 +55,23 @@ export default function CategoryForm({
     validationSchema,
     onSubmit: async (values, { setSubmitting, resetForm }) => {
       try {
-        await onSubmit(values);
+        if (category) {
+          await updateCategory({
+            variables: {
+              id: category.id,
+              input: values,
+            },
+          });
+        } else {
+          await createCategory({
+            variables: {
+              input: values,
+            },
+          });
+        }
         resetForm();
+        onSuccess();
+        onClose();
       } catch (error) {
         console.error('Failed to save category:', error);
       } finally {
@@ -77,10 +94,8 @@ export default function CategoryForm({
 
   const handleNameChange = (name: string) => {
     formik.setFieldValue('name', name);
-    if (!category) {
-      // Auto-generate slug only for new categories
-      formik.setFieldValue('slug', generateSlug(name));
-    }
+    // Auto-generate slug for both new and existing categories
+    formik.setFieldValue('slug', generateSlug(name));
   };
 
   return (
@@ -100,7 +115,11 @@ export default function CategoryForm({
           onBlur={formik.handleBlur}
           placeholder="e.g., Electronics"
           required
-          error={formik.touched.name && formik.errors.name ? formik.errors.name : undefined}
+          error={
+            formik.touched.name && formik.errors.name
+              ? formik.errors.name
+              : undefined
+          }
         />
 
         <FormField
@@ -113,14 +132,21 @@ export default function CategoryForm({
           onBlur={formik.handleBlur}
           placeholder="e.g., electronics"
           required
-          error={formik.touched.slug && formik.errors.slug ? formik.errors.slug : undefined}
+          error={
+            formik.touched.slug && formik.errors.slug
+              ? formik.errors.slug
+              : undefined
+          }
         />
 
         <div className="flex justify-end gap-2 pt-4 border-t">
           <Button type="button" onClick={onClose} variant="secondary">
             Cancel
           </Button>
-          <Button type="submit" disabled={formik.isSubmitting || !formik.isValid}>
+          <Button
+            type="submit"
+            disabled={formik.isSubmitting || !formik.isValid}
+          >
             {formik.isSubmitting ? 'Saving...' : 'Save'}
           </Button>
         </div>

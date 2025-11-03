@@ -20,6 +20,7 @@ export const resolvers = {
     ...cartResolvers.Mutation,
     ...orderResolvers.Mutation,
     ...walletResolvers.Mutation,
+    ...categoryResolvers.Mutation,
   },
   Product: productResolvers.Product,
   CartItem: cartResolvers.CartItem,
