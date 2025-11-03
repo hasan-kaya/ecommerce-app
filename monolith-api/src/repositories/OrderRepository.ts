@@ -25,4 +25,17 @@ export class OrderRepository {
   async create(order: Order) {
     return this.repository.save(order);
   }
+
+  async count() {
+    return this.repository.count();
+  }
+
+  async getTotalRevenue() {
+    const result = await this.repository
+      .createQueryBuilder('order')
+      .select('SUM(order.priceMinor)', 'total')
+      .getRawOne();
+
+    return result?.total || 0;
+  }
 }

@@ -50,4 +50,8 @@ export class ProductRepository {
     product.stock_qty = product.stock_qty - quantity;
     return this.repository.save(product);
   }
+
+  async count() {
+    return this.repository.count();
+  }
 }

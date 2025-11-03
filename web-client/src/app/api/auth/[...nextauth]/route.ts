@@ -3,6 +3,31 @@ import type { OAuthConfig } from 'next-auth/providers/oauth';
 import type { Session, Profile, Account, User } from 'next-auth';
 import type { JWT } from 'next-auth/jwt';
 
+declare module 'next-auth' {
+  interface Session {
+    accessToken?: string;
+    error?: string;
+    role?: string;
+    scopes?: string[];
+  }
+
+  interface User {
+    role?: string;
+    scopes?: string[];
+  }
+}
+
+declare module 'next-auth/jwt' {
+  interface JWT {
+    accessToken?: string;
+    refreshToken?: string;
+    expiresAt?: number;
+    error?: string;
+    role?: string;
+    scopes?: string[];
+  }
+}
+
 const BACKEND_URL = process.env.BACKEND_URL || 'http://monolith-api:4000';
 const PUBLIC_BACKEND_URL =
   process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:4000';
@@ -41,23 +66,36 @@ const webClientProvider = {
     token_endpoint_auth_method: 'none',
   },
   jwks_endpoint: `${BACKEND_URL}/oidc/jwks`,
-  profile(profile: Profile & { sub: string; email: string; name?: string }) {
+  profile(
+    profile: Profile & {
+      sub: string;
+      email: string;
+      name?: string;
+      role?: string;
+      scopes?: string[];
+    }
+  ) {
     return {
       id: profile.sub,
       email: profile.email,
       name: profile.name || profile.email,
+      role: profile.role || 'user',
+      scopes: profile.scopes || [],
     };
   },
 };
 
 export const authOptions = {
   debug: true,
-  secret: process.env.NEXTAUTH_SECRET || 'development-secret-key-change-in-production',
+  secret:
+    process.env.NEXTAUTH_SECRET ||
+    'development-secret-key-change-in-production',
   providers: [webClientProvider as OAuthConfig<Profile>],
   callbacks: {
     async jwt({
       token,
       account,
+      user,
     }: {
       token: JWT;
       account: Account | null;
@@ -69,6 +107,11 @@ export const authOptions = {
         token.expiresAt = account.expires_at;
       }
 
+      if (user) {
+        token.role = (user as any).role;
+        token.scopes = (user as any).scopes;
+      }
+
       if (Date.now() < (token.expiresAt as number) * 1000) {
         return token;
       }
@@ -78,6 +121,8 @@ export const authOptions = {
     async session({ session, token }: { session: Session; token: JWT }) {
       session.accessToken = token.accessToken;
       session.error = token.error;
+      session.role = token.role as string;
+      session.scopes = token.scopes as string[];
       return session;
     },
   },

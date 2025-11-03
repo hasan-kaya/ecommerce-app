@@ -36,3 +36,10 @@ export const ScopeGroups = {
 export function hasScopes(userScopes: string[], requiredScopes: Scope[]): boolean {
   return requiredScopes.every((scope) => userScopes.includes(scope));
 }
+
+export function getScopesForRole(role: string): string[] {
+  if (role === 'admin') {
+    return [...ScopeGroups.ADMIN];
+  }
+  return [...ScopeGroups.USER];
+}

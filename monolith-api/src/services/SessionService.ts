@@ -1,5 +1,6 @@
 import { randomBytes } from 'crypto';
 
+import { getScopesForRole } from '@/auth/scopes';
 import { redisClient } from '@/config/redis';
 
 export class SessionService {
@@ -14,6 +15,7 @@ export class SessionService {
       userId,
       email,
       role,
+      scopes: getScopesForRole(role),
       createdAt: Date.now(),
     };
 

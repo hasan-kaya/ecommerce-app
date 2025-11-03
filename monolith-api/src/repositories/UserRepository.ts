@@ -16,4 +16,8 @@ export class UserRepository {
     const user = this.repository.create(userData);
     return this.repository.save(user);
   }
+
+  async count() {
+    return this.repository.count();
+  }
 }

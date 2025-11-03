@@ -1,13 +1,27 @@
 import StatCard from '@/components/features/dashboard/StatCard';
+import { getAdminStats, AdminStats } from '@/lib/graphql/services/admin';
+import { formatMoney } from '@/lib/utils/money';
 
-export default function AdminDashboard() {
-  // Mock data
-  const stats = {
-    totalOrders: 1234,
-    totalUsers: 567,
-    totalProducts: 89,
-    totalRevenue: 45678,
-  };
+export default async function AdminDashboard() {
+  let stats: AdminStats | null = null;
+  let error: string | null = null;
+
+  try {
+    stats = await getAdminStats();
+  } catch (err) {
+    console.error('Failed to fetch admin stats:', err);
+    error = 'Failed to load dashboard statistics';
+  }
+
+  if (error || !stats) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-lg text-red-600">
+          {error || 'Failed to load data'}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -34,22 +48,10 @@ export default function AdminDashboard() {
         />
         <StatCard
           title="Total Revenue"
-          value={`$${(stats.totalRevenue / 100).toFixed(2)}`}
+          value={`${formatMoney(stats.totalRevenue, 'TRY')}`}
           icon="💰"
           color="yellow"
         />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-bold mb-4">Recent Orders</h2>
-          <p className="text-gray-600">Coming soon...</p>
-        </div>
-
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl font-bold mb-4">Top Products</h2>
-          <p className="text-gray-600">Coming soon...</p>
-        </div>
       </div>
     </div>
   );

@@ -30,7 +30,12 @@ export const createContext = async ({
       return { res };
     }
 
-    return { userId: session.userId, res };
+    return {
+      userId: session.userId,
+      role: session.role,
+      scopes: session.scopes || [],
+      res,
+    };
   } catch (error) {
     console.error('GraphQL context error:', error);
     return { res };

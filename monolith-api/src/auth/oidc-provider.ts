@@ -1,6 +1,7 @@
 import { ClientAuthMethod, Provider, ResponseType } from 'oidc-provider';
 
 import { RedisAdapter } from './oidc-redis-adapter';
+import { getScopesForRole } from './scopes';
 
 import { AppDataSource } from '@/config/data-source';
 import { User } from '@/entities/User';
@@ -26,7 +27,7 @@ const configuration = {
   claims: {
     openid: ['sub'],
     email: ['email'],
-    profile: ['name'],
+    profile: ['name', 'role', 'scopes'],
   },
   interactions: {
     url(ctx: any, interaction: any) {
@@ -48,12 +49,14 @@ const configuration = {
           sub: user.id,
           email: user.email,
           name: user.name,
+          role: user.role,
+          scopes: getScopesForRole(user.role),
         };
       },
     };
   },
   pkce: {
-    required: () => true, 
+    required: () => true,
   },
   features: {
     devInteractions: { enabled: false },

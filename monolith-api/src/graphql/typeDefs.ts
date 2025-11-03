@@ -1,3 +1,4 @@
+import { adminTypeDefs } from './admin';
 import { authTypeDefs } from './auth';
 import { cartTypeDefs } from './cart';
 import { categoryTypeDefs } from './category';
@@ -17,6 +18,7 @@ const baseTypeDefs = `#graphql
 
 export const typeDefs = [
   baseTypeDefs,
+  adminTypeDefs,
   authTypeDefs,
   cartTypeDefs,
   categoryTypeDefs,

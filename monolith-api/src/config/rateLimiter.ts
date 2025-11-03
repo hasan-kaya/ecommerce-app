@@ -23,7 +23,7 @@ export const initRateLimiters = () => {
 
   authLimiterInstance = rateLimit({
     windowMs: 15 * 60 * 1000,
-    max: 5, // 5 attempts per 15 minutes per IP
+    max: 50, // 50 attempts per 15 minutes per IP
     message: 'Too many authentication attempts, please try again later.',
     standardHeaders: true,
     legacyHeaders: false,

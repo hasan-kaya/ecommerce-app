@@ -1,3 +1,4 @@
+import { adminResolvers } from './admin';
 import { authResolvers } from './auth';
 import { cartResolvers } from './cart';
 import { categoryResolvers } from './category';
@@ -7,6 +8,7 @@ import { walletResolvers } from './wallet';
 
 export const resolvers = {
   Query: {
+    ...adminResolvers.Query,
     ...authResolvers.Query,
     ...cartResolvers.Query,
     ...categoryResolvers.Query,
