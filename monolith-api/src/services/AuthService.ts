@@ -1,8 +1,10 @@
 import { AppError } from '@/common/middleware/error';
 import { UserRepository } from '@/repositories/UserRepository';
+import { WalletService } from '@/services/WalletService';
 
 export class AuthService {
   private userRepository = new UserRepository();
+  private walletService = new WalletService();
 
   async me(userId: string) {
     const user = await this.userRepository.findById(userId);
@@ -21,6 +23,8 @@ export class AuthService {
         email,
         name: name || email,
       });
+
+      await this.walletService.createInitialWallets(user.id);
     }
 
     return user;

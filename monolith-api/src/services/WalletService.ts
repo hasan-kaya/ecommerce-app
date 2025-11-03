@@ -1,11 +1,23 @@
 import { AppError } from '@/common/middleware/error';
+import { CurrencyRepository } from '@/repositories/CurrencyRepository';
 import { WalletRepository } from '@/repositories/WalletRepository';
 
 export class WalletService {
   private walletRepository = new WalletRepository();
+  private currencyRepository = new CurrencyRepository();
 
   public async getUserWallets(userId: string) {
     return this.walletRepository.findByUserId(userId);
+  }
+
+  public async createInitialWallets(userId: string) {
+    const currencies = await this.currencyRepository.findAll();
+
+    const walletPromises = currencies.map((currency) =>
+      this.walletRepository.createWallet(userId, currency.code)
+    );
+
+    await Promise.all(walletPromises);
   }
 
   public async topUpUserWallet(userId: string, currency: string, amountMinor: number) {

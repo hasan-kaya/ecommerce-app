@@ -21,7 +21,10 @@ export class CartRepository {
   }
 
   async createCart(userId: string) {
-    const cart = this.cartRepository.create({ user: { id: userId } });
+    const cart = this.cartRepository.create({
+      user: { id: userId },
+      cartItems: [],
+    });
     return this.cartRepository.save(cart);
   }
 
