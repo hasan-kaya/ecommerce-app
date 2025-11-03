@@ -5,12 +5,7 @@ import Button from '@/components/ui/Button';
 import FormSelect from '@/components/ui/FormSelect';
 import FormField from '@/components/ui/FormField';
 import Modal from '@/components/ui/Modal';
-
-type Wallet = {
-  id: string;
-  currency: string;
-  balance: number;
-};
+import { Wallet } from '@/graphql/types';
 
 type TopUpModalProps = {
   isOpen: boolean;

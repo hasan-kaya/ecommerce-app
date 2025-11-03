@@ -6,14 +6,9 @@ import Modal from '@/components/ui/Modal';
 import TopUpModal from '@/components/features/wallet/TopUpModal';
 import TransferModal from '@/components/features/wallet/TransferModal';
 import TransactionHistory from '@/components/features/wallet/TransactionHistory';
-
-// Mock data
-const mockWallets = [
-  { id: '1', currency: 'TRY', balance: 150000, createdAt: '2025-01-01' },
-  { id: '2', currency: 'USD', balance: 5000, createdAt: '2025-01-01' },
-  { id: '3', currency: 'EUR', balance: 3000, createdAt: '2025-01-01' },
-  { id: '4', currency: 'GBP', balance: 2000, createdAt: '2025-01-01' },
-];
+import { WalletsResponse } from '@/graphql/types';
+import { GET_WALLETS } from '@/graphql/queries/wallet';
+import { useQuery } from '@apollo/client/react';
 
 const mockTransactions = [
   {
@@ -64,6 +59,8 @@ export default function WalletsPage() {
     string | null
   >(null);
 
+  const { data: walletsData } = useQuery<WalletsResponse>(GET_WALLETS);
+
   const handleTopUp = (walletId: string) => {
     setSelectedWalletForTopUp(walletId);
     setIsTopUpModalOpen(true);
@@ -79,21 +76,19 @@ export default function WalletsPage() {
     setIsHistoryModalOpen(true);
   };
 
-  // Filter transactions by selected wallet
-  const selectedWallet = mockWallets.find(
-    (w) => w.id === selectedWalletForHistory
-  );
-  const filteredTransactions = selectedWallet
-    ? mockTransactions.filter((t) => t.currency === selectedWallet.currency)
-    : [];
+  const wallets = walletsData?.wallets || [];
+
+  const selectedWallet = wallets.find((w) => w.id === selectedWalletForHistory);
+  const filteredTransactions = mockTransactions;
+
+  console.log('wallets', wallets);
 
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold mb-8">My Wallets</h1>
 
-      {/* Wallet Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {mockWallets.map((wallet) => (
+        {wallets.map((wallet) => (
           <WalletCard
             key={wallet.id}
             wallet={wallet}
@@ -108,14 +103,14 @@ export default function WalletsPage() {
       <TopUpModal
         isOpen={isTopUpModalOpen}
         onClose={() => setIsTopUpModalOpen(false)}
-        wallets={mockWallets}
+        wallets={wallets}
         selectedWalletId={selectedWalletForTopUp}
       />
 
       <TransferModal
         isOpen={isTransferModalOpen}
         onClose={() => setIsTransferModalOpen(false)}
-        wallets={mockWallets}
+        wallets={wallets}
         selectedFromWalletId={selectedWalletForTransfer}
       />
 
