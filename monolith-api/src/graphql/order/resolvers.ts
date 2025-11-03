@@ -1,3 +1,4 @@
+import { Order } from '@/entities/Order';
 import { GraphQLContext, requireAuth } from '@/graphql/utils/auth';
 import { OrderService } from '@/services/OrderService';
 
@@ -26,7 +27,7 @@ export const orderResolvers = {
     },
   },
   Order: {
-    status: (parent: any) => parent.status.toUpperCase(),
-    createdAt: (parent: any) => parent.created_at,
+    status: (parent: Order) => parent.status.toUpperCase(),
+    createdAt: (parent: Order) => parent.createdAt.toISOString(),
   },
 };
