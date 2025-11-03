@@ -13,6 +13,22 @@ export class OrderService {
   private productService = new ProductService();
   private walletService = new WalletService();
 
+  async getUserOrders(userId: string, page: number = 1, pageSize: number = 10) {
+    const offset = (page - 1) * pageSize;
+    const [orders, total] = await this.orderRepository.findByUserIdPaginated(
+      userId,
+      pageSize,
+      offset
+    );
+
+    return {
+      orders,
+      total,
+      page,
+      pageSize,
+    };
+  }
+
   async createOrder(walletCurrency: string, userId: string) {
     const cart = await this.cartService.getUserCart(userId);
 

@@ -12,6 +12,7 @@ export const resolvers = {
     ...categoryResolvers.Query,
     ...productResolvers.Query,
     ...walletResolvers.Query,
+    ...orderResolvers.Query,
   },
   Mutation: {
     ...cartResolvers.Mutation,

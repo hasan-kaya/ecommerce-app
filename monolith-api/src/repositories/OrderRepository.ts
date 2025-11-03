@@ -8,6 +8,20 @@ export class OrderRepository {
     return this.repository.find({ where: { user: { id: userId } } });
   }
 
+  async findByUserIdPaginated(
+    userId: string,
+    limit: number = 10,
+    offset: number = 0
+  ): Promise<[Order[], number]> {
+    return this.repository.findAndCount({
+      where: { user: { id: userId } },
+      relations: ['items', 'items.product'],
+      order: { createdAt: 'DESC' },
+      take: limit,
+      skip: offset,
+    });
+  }
+
   async create(order: Order) {
     return this.repository.save(order);
   }

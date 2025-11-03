@@ -8,6 +8,16 @@ interface CheckoutArgs {
 }
 
 export const orderResolvers = {
+  Query: {
+    orders: async (
+      _: unknown,
+      { page, pageSize }: { page?: number; pageSize?: number },
+      context: GraphQLContext
+    ) => {
+      const userId = requireAuth(context);
+      return orderService.getUserOrders(userId, page, pageSize);
+    },
+  },
   Mutation: {
     checkout: async (_: any, { walletCurrency }: CheckoutArgs, context: GraphQLContext) => {
       const userId = requireAuth(context);

@@ -25,6 +25,17 @@ export const orderTypeDefs = `#graphql
     createdAt: String!
   }
 
+  type OrderPage {
+    orders: [Order!]!
+    total: Int!
+    page: Int!
+    pageSize: Int!
+  }
+
+  extend type Query {
+    orders(page: Int, pageSize: Int): OrderPage!
+  }
+
   extend type Mutation {
     checkout(walletCurrency: String!): Order!
   }
