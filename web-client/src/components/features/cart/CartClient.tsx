@@ -7,7 +7,11 @@ import {
   REMOVE_CART_ITEM,
 } from '@/graphql/mutations/cart';
 import { GET_CART } from '@/graphql/queries/cart';
-import type { Cart } from '@/graphql/types';
+import type {
+  Cart,
+  UpdateCartItemQuantityResponse,
+  RemoveCartItemResponse,
+} from '@/graphql/types';
 import CartItem from './CartItem';
 import CartSummary from './CartSummary';
 
@@ -21,7 +25,7 @@ export default function CartClient({ initialCart }: CartClientProps) {
   });
 
   const [updateCartItemQuantity] = useMutation<
-    { updateCartItemQuantity: Cart },
+    UpdateCartItemQuantityResponse,
     { cartItemId: string; qty: number }
   >(UPDATE_CART_ITEM_QUANTITY, {
     update(cache, { data }) {
@@ -39,7 +43,7 @@ export default function CartClient({ initialCart }: CartClientProps) {
   });
 
   const [removeCartItem] = useMutation<
-    { removeCartItem: Cart },
+    RemoveCartItemResponse,
     { cartItemId: string }
   >(REMOVE_CART_ITEM, {
     update(cache, { data }) {
@@ -100,7 +104,7 @@ export default function CartClient({ initialCart }: CartClientProps) {
         </div>
 
         <div className="lg:col-span-1">
-          <CartSummary subtotal={totalPrice} currency="USD" />
+          <CartSummary subtotal={totalPrice} currency="TRY" />
         </div>
       </div>
     </div>

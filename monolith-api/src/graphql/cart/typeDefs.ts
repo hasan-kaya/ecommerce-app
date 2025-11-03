@@ -16,7 +16,7 @@ export const cartTypeDefs = `#graphql
   }
 
   extend type Mutation {
-    addToCart(productId: ID!, qty: Int!): CartItem!
+    addToCart(productId: ID!, qty: Int!): Cart!
     updateCartItemQuantity(cartItemId: ID!, qty: Int!): Cart!
     removeCartItem(cartItemId: ID!): Cart!
   }

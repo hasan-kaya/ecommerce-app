@@ -4,15 +4,17 @@ import type { Product, ProductsResponse } from '@/graphql/types';
 
 const ITEMS_PER_PAGE = 12;
 
+type FetchProductsParams = {
+  selectedCategory?: string | null;
+  searchQuery?: string;
+  currentPage?: number;
+};
+
 export async function fetchProducts({
   selectedCategory,
   searchQuery,
   currentPage,
-}: {
-  selectedCategory?: string | null;
-  searchQuery?: string;
-  currentPage?: number;
-}) {
+}: FetchProductsParams) {
   const client = await getClient();
 
   const { data } = await client.query<{ products: ProductsResponse }>({

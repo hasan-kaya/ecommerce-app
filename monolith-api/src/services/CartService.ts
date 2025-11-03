@@ -3,11 +3,13 @@ import { Cart } from '@/entities/Cart';
 import { CartItem } from '@/entities/CartItem';
 import { Product } from '@/entities/Product';
 import { CartRepository } from '@/repositories/CartRepository';
+import { CurrencyService } from '@/services/CurrencyService';
 import { ProductService } from '@/services/ProductService';
 
 export class CartService {
   private cartRepository = new CartRepository();
   private productService = new ProductService();
+  private currencyService = new CurrencyService();
 
   private validateQuantity(qty: number) {
     if (qty < 1) {
@@ -48,11 +50,35 @@ export class CartService {
     });
   }
 
-  private calculateTotalPrice(cartItems: CartItem[]): string {
-    const total = cartItems.reduce((sum, item) => {
-      return sum + Number(item.product.price_minor) * item.qty;
-    }, 0);
-    return total.toString();
+  private async convertCartItemPrice(item: CartItem) {
+    const priceInBase = await this.currencyService.convertToBase(
+      Number(item.product.price_minor),
+      item.product.currency
+    );
+
+    return {
+      ...item,
+      product: {
+        ...item.product,
+        price_minor: priceInBase,
+        currency: this.currencyService.getBaseCurrency(),
+      },
+    };
+  }
+
+  private async calculateTotalPrice(cartItems: CartItem[]): Promise<string> {
+    let totalInBase = 0;
+
+    for (const item of cartItems) {
+      const itemTotal = Number(item.product.price_minor) * item.qty;
+      const itemTotalInBase = await this.currencyService.convertToBase(
+        itemTotal,
+        item.product.currency
+      );
+      totalInBase += itemTotalInBase;
+    }
+
+    return totalInBase.toString();
   }
 
   public async getUserCart(userId: string) {
@@ -61,10 +87,15 @@ export class CartService {
       throw new AppError('Cart not found', 404);
     }
 
-    const totalPrice = this.calculateTotalPrice(cart.cartItems);
+    const convertedCartItems = await Promise.all(
+      cart.cartItems.map((item) => this.convertCartItemPrice(item))
+    );
+
+    const totalPrice = await this.calculateTotalPrice(cart.cartItems);
 
     return {
       ...cart,
+      cartItems: convertedCartItems,
       totalPrice,
     };
   }

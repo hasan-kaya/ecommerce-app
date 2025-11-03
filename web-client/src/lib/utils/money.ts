@@ -6,7 +6,7 @@ export function formatMoney(
 
   const majorAmount = amount / 100;
 
-  return new Intl.NumberFormat('en-US', {
+  return new Intl.NumberFormat('tr-TR', {
     style: 'currency',
     currency: currency,
     minimumFractionDigits: 2,

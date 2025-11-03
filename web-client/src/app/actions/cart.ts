@@ -27,9 +27,11 @@ export async function addToCartAction(productId: string, qty: number = 1) {
       };
     }
 
+    revalidatePath('/cart');
+
     return {
       success: true as const,
-      data: result.data,
+      data: result.data.addToCart,
     };
   } catch (error) {
     console.error('Add to cart error:', error);

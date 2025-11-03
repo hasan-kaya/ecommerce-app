@@ -8,6 +8,7 @@ import {
   Unique,
 } from 'typeorm';
 
+import { Currency } from './Currency';
 import { User } from './User';
 
 @Entity('wallets')
@@ -22,6 +23,12 @@ export class Wallet {
   })
   @JoinColumn({ name: 'user_id' })
   user!: User;
+
+  @ManyToOne(() => Currency, {
+    nullable: false,
+  })
+  @JoinColumn({ name: 'currency' })
+  currencyRelation!: Currency;
 
   @Column({ length: 3 })
   currency!: string;

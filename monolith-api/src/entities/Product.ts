@@ -2,6 +2,7 @@ import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColum
 
 import { CartItem } from './CartItem';
 import { Category } from './Category';
+import { Currency } from './Currency';
 import { OrderItem } from './OrderItem';
 
 @Entity('products')
@@ -24,6 +25,12 @@ export class Product {
 
   @Column('bigint')
   price_minor!: number;
+
+  @ManyToOne(() => Currency, {
+    nullable: false,
+  })
+  @JoinColumn({ name: 'currency' })
+  currencyRelation!: Currency;
 
   @Column({ length: 3 })
   currency!: string;

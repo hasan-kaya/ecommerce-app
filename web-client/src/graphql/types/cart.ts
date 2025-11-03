@@ -11,3 +11,15 @@ export interface Cart {
   totalPrice: string;
   cartItems: CartItem[];
 }
+
+export interface AddToCartResponse {
+  addToCart: Cart;
+}
+
+export interface UpdateCartItemQuantityResponse {
+  updateCartItemQuantity: Cart;
+}
+
+export interface RemoveCartItemResponse {
+  removeCartItem: Cart;
+}

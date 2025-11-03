@@ -19,9 +19,8 @@ export const cartResolvers = {
   Mutation: {
     addToCart: async (_: any, { productId, qty }: AddToCartArgs, context: GraphQLContext) => {
       const userId = requireAuth(context);
-      const cartItem = await cartService.addToCart(userId, productId, qty);
-
-      return cartItem;
+      await cartService.addToCart(userId, productId, qty);
+      return cartService.getUserCart(userId);
     },
     updateCartItemQuantity: async (
       _: any,
@@ -40,7 +39,6 @@ export const cartResolvers = {
     ) => {
       const userId = requireAuth(context);
       const cart = await cartService.removeCartItem(userId, cartItemId);
-
       return cart;
     },
   },
