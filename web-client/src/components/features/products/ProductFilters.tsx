@@ -3,39 +3,32 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import Input from '@/components/ui/Input';
-import FormField from '@/components/ui/FormField';
 import FormRadio from '@/components/ui/FormRadio';
 
 type ProductFiltersProps = {
   searchQuery: string;
   categories: string[];
   selectedCategory: string | null;
-  minPrice: number;
-  maxPrice: number;
 };
 
 export default function ProductFilters({
   searchQuery,
   categories,
   selectedCategory,
-  minPrice,
-  maxPrice,
 }: ProductFiltersProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const priceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
     return () => {
       if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
-      if (priceTimeoutRef.current) clearTimeout(priceTimeoutRef.current);
     };
   }, []);
 
   const updateURL = (updates: Record<string, string | null>) => {
     const params = new URLSearchParams(searchParams.toString());
-    
+
     Object.entries(updates).forEach(([key, value]) => {
       if (value === null || value === '') {
         params.delete(key);
@@ -51,7 +44,7 @@ export default function ProductFilters({
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
     }
-    
+
     searchTimeoutRef.current = setTimeout(() => {
       updateURL({ search: query, page: '1' });
     }, 500);
@@ -59,20 +52,6 @@ export default function ProductFilters({
 
   const handleCategoryChange = (category: string | null) => {
     updateURL({ category, page: '1' });
-  };
-
-  const handlePriceChange = (min: number, max: number) => {
-    if (priceTimeoutRef.current) {
-      clearTimeout(priceTimeoutRef.current);
-    }
-    
-    priceTimeoutRef.current = setTimeout(() => {
-      updateURL({ 
-        minPrice: min.toString(), 
-        maxPrice: max.toString(),
-        page: '1'
-      });
-    }, 500);
   };
 
   return (
@@ -107,28 +86,6 @@ export default function ProductFilters({
               label={category}
             />
           ))}
-        </div>
-      </div>
-
-      <div>
-        <h4 className="font-semibold mb-3">Price Range</h4>
-        <div className="flex gap-2">
-          <FormField
-            label="Min"
-            type="number"
-            defaultValue={minPrice}
-            onChange={(e) => handlePriceChange(Number(e.target.value), maxPrice)}
-            min="0"
-            variant="small"
-          />
-          <FormField
-            label="Max"
-            type="number"
-            defaultValue={maxPrice}
-            onChange={(e) => handlePriceChange(minPrice, Number(e.target.value))}
-            min="0"
-            variant="small"
-          />
         </div>
       </div>
     </div>
