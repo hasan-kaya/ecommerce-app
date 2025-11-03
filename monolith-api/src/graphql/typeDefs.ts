@@ -2,6 +2,7 @@ import { authTypeDefs } from './auth';
 import { cartTypeDefs } from './cart';
 import { categoryTypeDefs } from './category';
 import { productTypeDefs } from './product';
+import { walletTypeDefs } from './wallet';
 
 const baseTypeDefs = `#graphql
   type Query {
@@ -19,4 +20,5 @@ export const typeDefs = [
   cartTypeDefs,
   categoryTypeDefs,
   productTypeDefs,
+  walletTypeDefs,
 ];
