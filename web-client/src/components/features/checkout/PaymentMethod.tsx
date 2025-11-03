@@ -2,11 +2,12 @@
 
 import FormSelect from '@/components/ui/FormSelect';
 import { formatMoney } from '@/lib/utils/money';
+import type { Wallet } from '@/graphql/types';
 
 type PaymentMethodProps = {
   selectedWallet?: string;
   onWalletChange: (currency: string) => void;
-  wallets: Array<{ currency: string; balance: number }>;
+  wallets: Wallet[];
 };
 
 export default function PaymentMethod({
@@ -26,7 +27,7 @@ export default function PaymentMethod({
         <option value="">Select a wallet</option>
         {wallets.map((wallet) => (
           <option key={wallet.currency} value={wallet.currency}>
-            {wallet.currency} - Balance: {formatMoney(wallet.balance, wallet.currency)}
+            {wallet.currency} - Balance: {formatMoney(Number(wallet.balanceMinor), wallet.currency)}
           </option>
         ))}
       </FormSelect>
