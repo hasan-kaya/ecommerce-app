@@ -122,23 +122,23 @@ export default function DataTable<T extends { id: string }>({
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end gap-2">
                           {onEdit && (
-                            <button
+                            <Button
                               onClick={() => onEdit(item)}
-                              className="text-blue-600 hover:text-blue-900"
+                              variant="success"
                             >
                               Edit
-                            </button>
+                            </Button>
                           )}
                           {onDelete && (
-                            <button
+                            <Button
                               onClick={() => handleDelete(item)}
                               disabled={deletingId === item.id}
-                              className="text-red-600 hover:text-red-900 disabled:opacity-50"
+                              variant="danger"
                             >
                               {deletingId === item.id
                                 ? 'Deleting...'
                                 : 'Delete'}
-                            </button>
+                            </Button>
                           )}
                         </div>
                       </td>

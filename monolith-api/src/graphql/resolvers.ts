@@ -21,6 +21,7 @@ export const resolvers = {
     ...orderResolvers.Mutation,
     ...walletResolvers.Mutation,
     ...categoryResolvers.Mutation,
+    ...productResolvers.Mutation,
   },
   Product: productResolvers.Product,
   CartItem: cartResolvers.CartItem,

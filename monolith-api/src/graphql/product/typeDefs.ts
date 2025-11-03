@@ -31,4 +31,28 @@ export const productTypeDefs = `#graphql
       pageSize: Int
     ): ProductsResponse!
   }
+
+  extend type Mutation {
+    createProduct(input: CreateProductInput!): Product!
+    updateProduct(id: ID!, input: UpdateProductInput!): Product!
+    deleteProduct(id: ID!): Boolean!
+  }
+
+  input CreateProductInput {
+    name: String!
+    slug: String!
+    priceMinor: String!
+    currency: String!
+    stockQty: Int!
+    categoryId: ID!
+  }
+
+  input UpdateProductInput {
+    name: String!
+    slug: String!
+    priceMinor: String!
+    currency: String!
+    stockQty: Int!
+    categoryId: ID!
+  }
 `;

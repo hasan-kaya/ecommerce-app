@@ -6,7 +6,10 @@ const categoryService = new CategoryService();
 
 export const categoryResolvers = {
   Query: {
-    categories: async (_: any, { page = 1, pageSize = 10 }: { page?: number; pageSize?: number }) => {
+    categories: async (
+      _: any,
+      { page = 1, pageSize = 10 }: { page?: number; pageSize?: number }
+    ) => {
       return categoryService.getCategories(page, pageSize);
     },
   },

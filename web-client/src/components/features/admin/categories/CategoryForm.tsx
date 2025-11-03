@@ -113,7 +113,6 @@ export default function CategoryForm({
           value={formik.values.name}
           onChange={(e) => handleNameChange(e.target.value)}
           onBlur={formik.handleBlur}
-          placeholder="e.g., Electronics"
           required
           error={
             formik.touched.name && formik.errors.name
@@ -130,7 +129,6 @@ export default function CategoryForm({
           value={formik.values.slug}
           onChange={formik.handleChange}
           onBlur={formik.handleBlur}
-          placeholder="e.g., electronics"
           required
           error={
             formik.touched.slug && formik.errors.slug

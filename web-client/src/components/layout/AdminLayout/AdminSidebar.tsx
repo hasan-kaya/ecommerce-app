@@ -15,28 +15,16 @@ export default function AdminSidebar() {
           Dashboard
         </Link>
         <Link
-          href="/admin/products"
-          className="block px-6 py-3 hover:bg-gray-800 border-l-4 border-transparent hover:border-blue-500"
-        >
-          Products
-        </Link>
-        <Link
-          href="/admin/orders"
-          className="block px-6 py-3 hover:bg-gray-800 border-l-4 border-transparent hover:border-blue-500"
-        >
-          Orders
-        </Link>
-        <Link
-          href="/admin/users"
-          className="block px-6 py-3 hover:bg-gray-800 border-l-4 border-transparent hover:border-blue-500"
-        >
-          Users
-        </Link>
-        <Link
           href="/admin/categories"
           className="block px-6 py-3 hover:bg-gray-800 border-l-4 border-transparent hover:border-blue-500"
         >
           Categories
+        </Link>
+        <Link
+          href="/admin/products"
+          className="block px-6 py-3 hover:bg-gray-800 border-l-4 border-transparent hover:border-blue-500"
+        >
+          Products
         </Link>
       </nav>
     </aside>

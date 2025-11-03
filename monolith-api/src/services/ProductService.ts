@@ -61,4 +61,57 @@ export class ProductService {
     }
     return product;
   }
+
+  async createProduct(data: {
+    name: string;
+    slug: string;
+    priceMinor: string;
+    currency: string;
+    stockQty: number;
+    categoryId: string;
+  }) {
+    const existingProduct = await this.productRepository.findBySlug(data.slug);
+    if (existingProduct) {
+      throw new AppError('Product with this slug already exists', 409);
+    }
+
+    return this.productRepository.create(data);
+  }
+
+  async updateProduct(
+    id: string,
+    data: {
+      name: string;
+      slug: string;
+      priceMinor: string;
+      currency: string;
+      stockQty: number;
+      categoryId: string;
+    }
+  ) {
+    const product = await this.productRepository.findById(id);
+    if (!product) {
+      throw new AppError('Product not found', 404);
+    }
+
+    const existingProduct = await this.productRepository.findBySlug(data.slug);
+    if (existingProduct && existingProduct.id !== id) {
+      throw new AppError('Product with this slug already exists', 409);
+    }
+
+    const updated = await this.productRepository.update(id, data);
+    if (!updated) {
+      throw new AppError('Failed to update product', 500);
+    }
+    return updated;
+  }
+
+  async deleteProduct(id: string) {
+    const product = await this.productRepository.findById(id);
+    if (!product) {
+      throw new AppError('Product not found', 404);
+    }
+
+    return this.productRepository.delete(id);
+  }
 }
