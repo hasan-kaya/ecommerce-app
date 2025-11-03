@@ -4,12 +4,14 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   Unique,
 } from 'typeorm';
 
 import { Currency } from './Currency';
 import { User } from './User';
+import { WalletTransaction } from './WalletTransaction';
 
 @Entity('wallets')
 @Unique(['user', 'currency'])
@@ -38,4 +40,7 @@ export class Wallet {
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt!: Date;
+
+  @OneToMany(() => WalletTransaction, (walletTransaction) => walletTransaction.wallet)
+  transactions!: WalletTransaction[];
 }
