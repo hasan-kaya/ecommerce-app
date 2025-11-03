@@ -1,15 +1,11 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
 import Button from '@/components/ui/Button';
+import { signOut } from 'next-auth/react';
 
 export default function AdminHeader() {
-  const router = useRouter();
-
-  const handleLogout = () => {
-    localStorage.removeItem('user');
-    window.dispatchEvent(new Event('userChanged'));
-    router.push('/');
+  const handleLogout = async () => {
+    await signOut({ callbackUrl: '/' });
   };
 
   return (
@@ -19,10 +15,7 @@ export default function AdminHeader() {
 
         <div className="flex items-center gap-4">
           <span className="text-gray-600">Admin User</span>
-          <Button
-            onClick={handleLogout}
-            variant="danger"
-          >
+          <Button onClick={handleLogout} variant="danger">
             Logout
           </Button>
         </div>
