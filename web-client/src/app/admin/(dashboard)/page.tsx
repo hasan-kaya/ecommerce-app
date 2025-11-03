@@ -1,4 +1,4 @@
-import StatCard from '@/components/features/dashboard/StatCard';
+import StatCard from '@/components/features/admin/dashboard/StatCard';
 import { getAdminStats, AdminStats } from '@/lib/graphql/services/admin';
 import { formatMoney } from '@/lib/utils/money';
 
