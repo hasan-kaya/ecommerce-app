@@ -32,19 +32,16 @@ function graphqlRequest(query, variables = {}, headers = {}) {
   return http.post(GRAPHQL_URL, payload, params);
 }
 
+// Default test session token (created by seed script)
+const DEFAULT_SESSION_TOKEN = 'ce8d4e24ce258fe39d2bc6961812a8af197f9c8776bbe2e9f7dacc2adfd7dfcd';
+
 export default function () {
-  // Get session token from environment variable
-  const sessionToken = __ENV.SESSION_TOKEN;
+  // Get session token from environment variable or use default from seed
+  const sessionToken = __ENV.SESSION_TOKEN || DEFAULT_SESSION_TOKEN;
 
   if (!sessionToken) {
-    console.error('SESSION_TOKEN environment variable is required');
-    console.error('');
-    console.error('How to get your session token:');
-    console.error('1. Open http://localhost:3000 in your browser');
-    console.error('2. Login with your account');
-    console.error('3. Open DevTools (F12) → Application → Cookies');
-    console.error('4. Copy the "session_token" cookie value');
-    console.error('5. Run: k6 run --env SESSION_TOKEN=your_token e2e-graphql.test.js');
+    console.error('SESSION_TOKEN not found');
+    console.error('   Run: npm run seed:test to create test data');
     return;
   }
 
