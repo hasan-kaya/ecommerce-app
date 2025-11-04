@@ -105,4 +105,5 @@ jobs:
           DB_NAME: shop_test
           REDIS_URL: redis://localhost:6379
           NODE_ENV: test
+          SESSION_TOKEN: ce8d4e24ce258fe39d2bc6961812a8af197f9c8776bbe2e9f7dacc2adfd7dfcd
         run: npm test
