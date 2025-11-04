@@ -41,7 +41,12 @@ export const walletResolvers = {
       context: GraphQLContext
     ) => {
       const userId = requireAuth(context);
-      return walletService.transferBetweenWallets(userId, fromCurrency, toCurrency, amountMinor);
+      return await walletService.transferBetweenWallets(
+        userId,
+        fromCurrency,
+        toCurrency,
+        amountMinor
+      );
     },
   },
   Wallet: {

@@ -1,4 +1,5 @@
 import { AppError } from '@/common/middleware/error';
+import { runInTransaction } from '@/common/utils/transaction';
 import { TransactionType } from '@/entities/WalletTransaction';
 import { CurrencyRepository } from '@/repositories/CurrencyRepository';
 import { WalletRepository } from '@/repositories/WalletRepository';
@@ -74,7 +75,7 @@ export class WalletService {
       description || `Top up ${currency} wallet`
     );
 
-    return updatedWallet;
+    return await this.walletRepository.findByUserIdAndCurrency(userId, currency);
   }
 
   public async checkBalance(userId: string, currency: string, requiredAmountMinor: number) {
@@ -114,7 +115,7 @@ export class WalletService {
       description || `Deduct from ${currency} wallet`
     );
 
-    return wallet;
+    return await this.walletRepository.findByUserIdAndCurrency(userId, currency);
   }
 
   private async convertCurrency(
@@ -146,51 +147,57 @@ export class WalletService {
     toCurrency: string,
     amountMinor: number
   ) {
-    const fromWallet = await this.walletRepository.findByUserIdAndCurrency(userId, fromCurrency);
-    if (!fromWallet) {
-      throw new AppError(`Source wallet not found`, 404);
-    }
+    return runInTransaction(async () => {
+      const fromWallet = await this.walletRepository.findByUserIdAndCurrency(userId, fromCurrency);
+      if (!fromWallet) {
+        throw new AppError(`Source wallet not found`, 404);
+      }
 
-    let toWallet = await this.walletRepository.findByUserIdAndCurrency(userId, toCurrency);
-    if (!toWallet) {
-      toWallet = await this.walletRepository.createWallet(userId, toCurrency);
-    }
+      let toWallet = await this.walletRepository.findByUserIdAndCurrency(userId, toCurrency);
+      if (!toWallet) {
+        toWallet = await this.walletRepository.createWallet(userId, toCurrency);
+      }
 
-    // Check balance
-    await this.checkBalance(userId, fromCurrency, amountMinor);
+      // Check balance
+      await this.checkBalance(userId, fromCurrency, amountMinor);
 
-    // Convert currency
-    const convertedAmount = await this.convertCurrency(amountMinor, fromCurrency, toCurrency);
+      // Convert currency
+      const convertedAmount = await this.convertCurrency(amountMinor, fromCurrency, toCurrency);
 
-    // Deduct from source wallet
-    await this.walletRepository.deductBalance(userId, fromCurrency, amountMinor);
+      // Deduct from source wallet (atomic with balance check)
+      try {
+        await this.walletRepository.deductBalance(userId, fromCurrency, amountMinor);
+      } catch {
+        throw new AppError('Insufficient balance for transfer', 400);
+      }
 
-    // Add to destination wallet with converted amount
-    await this.walletRepository.topUpWallet(userId, toCurrency, convertedAmount);
+      // Add to destination wallet with converted amount
+      await this.walletRepository.topUpWallet(userId, toCurrency, convertedAmount);
 
-    // Create TRANSFER_OUT transaction for source wallet
-    const transferOutTransaction = await this.transactionRepository.createTransaction(
-      fromWallet.id,
-      TransactionType.TRANSFER_OUT,
-      amountMinor,
-      fromCurrency,
-      `Transfer to ${toCurrency} wallet (${amountMinor} ${fromCurrency} → ${convertedAmount} ${toCurrency})`
-    );
+      // Create TRANSFER_OUT transaction for source wallet
+      const transferOutTransaction = await this.transactionRepository.createTransaction(
+        fromWallet.id,
+        TransactionType.TRANSFER_OUT,
+        amountMinor,
+        fromCurrency,
+        `Transfer to ${toCurrency} wallet (${amountMinor} ${fromCurrency} → ${convertedAmount} ${toCurrency})`
+      );
 
-    // Create TRANSFER_IN transaction for destination wallet
-    await this.transactionRepository.createTransaction(
-      toWallet.id,
-      TransactionType.TRANSFER_IN,
-      convertedAmount,
-      toCurrency,
-      `Transfer from ${fromCurrency} wallet (${amountMinor} ${fromCurrency} → ${convertedAmount} ${toCurrency})`,
-      transferOutTransaction.id
-    );
+      // Create TRANSFER_IN transaction for destination wallet
+      await this.transactionRepository.createTransaction(
+        toWallet.id,
+        TransactionType.TRANSFER_IN,
+        convertedAmount,
+        toCurrency,
+        `Transfer from ${fromCurrency} wallet (${amountMinor} ${fromCurrency} → ${convertedAmount} ${toCurrency})`,
+        transferOutTransaction.id
+      );
 
-    return {
-      fromWallet: await this.walletRepository.findByUserIdAndCurrency(userId, fromCurrency),
-      toWallet: await this.walletRepository.findByUserIdAndCurrency(userId, toCurrency),
-      convertedAmount,
-    };
+      return {
+        fromWallet: await this.walletRepository.findByUserIdAndCurrency(userId, fromCurrency),
+        toWallet: await this.walletRepository.findByUserIdAndCurrency(userId, toCurrency),
+        convertedAmount,
+      };
+    });
   }
 }

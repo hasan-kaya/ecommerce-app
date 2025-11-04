@@ -1,4 +1,5 @@
 import { AppError } from '@/common/middleware/error';
+import { runInTransaction } from '@/common/utils/transaction';
 import { Order, OrderStatus } from '@/entities/Order';
 import { OrderItem } from '@/entities/OrderItem';
 import { User } from '@/entities/User';
@@ -30,54 +31,68 @@ export class OrderService {
   }
 
   async createOrder(walletCurrency: string, userId: string) {
-    const cart = await this.cartService.getUserCart(userId);
+    return runInTransaction(async () => {
+      const cart = await this.cartService.getUserCart(userId);
 
-    if (!cart.cartItems || cart.cartItems.length === 0) {
-      throw new AppError('Cart is empty', 400);
-    }
+      if (!cart.cartItems || cart.cartItems.length === 0) {
+        throw new AppError('Cart is empty', 400);
+      }
 
-    // 1. Check Stock
-    this.cartService.checkCartStock(cart.cartItems);
+      // 1. Check Stock
+      this.cartService.checkCartStock(cart.cartItems);
 
-    // 2. Check Wallet Balance
-    let totalPriceMinor = 0;
-    for (const cartItem of cart.cartItems) {
-      const itemTotal = cartItem.product.priceMinor * cartItem.qty;
-      totalPriceMinor += itemTotal;
-    }
+      // 2. Calculate total
+      let totalPriceMinor = 0;
+      for (const cartItem of cart.cartItems) {
+        const itemTotal = cartItem.product.priceMinor * cartItem.qty;
+        totalPriceMinor += itemTotal;
+      }
 
-    await this.walletService.checkBalance(userId, walletCurrency, totalPriceMinor);
+      // 3. Check Wallet Balance
+      await this.walletService.checkBalance(userId, walletCurrency, totalPriceMinor);
 
-    // 3. Create Order
-    const orderItems = cart.cartItems.map((cartItem) => {
-      const orderItem = new OrderItem();
-      orderItem.product = cartItem.product;
-      orderItem.qty = cartItem.qty;
-      orderItem.priceMinor = cartItem.product.priceMinor;
-      orderItem.currency = walletCurrency;
-      return orderItem;
+      // 4. Deduct from Wallet (atomic operation with balance check)
+      try {
+        await this.walletService.deductFromWallet(userId, walletCurrency, totalPriceMinor);
+      } catch {
+        throw new AppError('Failed to deduct from wallet. Insufficient balance.', 400);
+      }
+
+      // 5. Decrease Product Stock (atomic operations with stock check)
+      try {
+        for (const cartItem of cart.cartItems) {
+          await this.productService.decreaseProductStock(cartItem.product.id, cartItem.qty);
+        }
+      } catch (err) {
+        throw new AppError(
+          `Failed to reserve stock: ${err instanceof Error ? err.message : 'Unknown error'}`,
+          400
+        );
+      }
+
+      // 6. Create Order
+      const orderItems = cart.cartItems.map((cartItem) => {
+        const orderItem = new OrderItem();
+        orderItem.product = cartItem.product;
+        orderItem.qty = cartItem.qty;
+        orderItem.priceMinor = cartItem.product.priceMinor;
+        orderItem.currency = walletCurrency;
+        return orderItem;
+      });
+
+      const order = new Order();
+      order.user = { id: userId } as User;
+      order.priceMinor = totalPriceMinor;
+      order.currency = walletCurrency;
+      order.status = OrderStatus.PENDING;
+      order.items = orderItems;
+
+      const savedOrder = await this.orderRepository.create(order);
+
+      // 7. Clear Cart
+      await this.cartService.clearCart(cart.id);
+
+      return savedOrder;
     });
-
-    const order = new Order();
-    order.user = { id: userId } as User;
-    order.priceMinor = totalPriceMinor;
-    order.currency = walletCurrency;
-    order.status = OrderStatus.PENDING;
-    order.items = orderItems;
-
-    const savedOrder = await this.orderRepository.create(order);
-
-    // 4. Deduct from Wallet
-    await this.walletService.deductFromWallet(userId, walletCurrency, totalPriceMinor);
-
-    // 5. Decrease Product Stock
-    for (const cartItem of cart.cartItems) {
-      await this.productService.decreaseProductStock(cartItem.product.id, cartItem.qty);
-    }
-
-    // 6. Clear Cart
-    await this.cartService.clearCart(cart.id);
-
-    return savedOrder;
   }
 }

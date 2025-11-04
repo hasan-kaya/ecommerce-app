@@ -20,10 +20,9 @@ export const orderResolvers = {
     },
   },
   Mutation: {
-    checkout: async (_: any, { walletCurrency }: CheckoutArgs, context: GraphQLContext) => {
+    checkout: async (_: unknown, { walletCurrency }: CheckoutArgs, context: GraphQLContext) => {
       const userId = requireAuth(context);
-      const order = await orderService.createOrder(walletCurrency, userId);
-      return order;
+      return await orderService.createOrder(walletCurrency, userId);
     },
   },
   Order: {

@@ -28,14 +28,18 @@ export class WalletRepository {
     currency: string,
     amountMinor: number
   ): Promise<Wallet | null> {
-    const wallet = await this.repository.findOne({
-      where: { user: { id: userId }, currency },
-    });
-    if (!wallet) return null;
+    // Use atomic UPDATE to prevent race conditions
+    const result = await this.repository
+      .createQueryBuilder()
+      .update()
+      .set({ balance_minor: () => `balance_minor + ${amountMinor}` })
+      .where('user_id = :userId', { userId })
+      .andWhere('currency = :currency', { currency })
+      .returning('*')
+      .execute();
 
-    wallet.balance_minor = Number(wallet.balance_minor) + amountMinor;
-    await this.repository.save(wallet);
-    return wallet;
+    if (result.affected === 0) return null;
+    return result.raw[0];
   }
 
   public async deductBalance(
@@ -43,13 +47,28 @@ export class WalletRepository {
     currency: string,
     amountMinor: number
   ): Promise<Wallet | null> {
-    const wallet = await this.repository.findOne({
-      where: { user: { id: userId }, currency },
-    });
-    if (!wallet) return null;
+    // Use atomic UPDATE with balance check to prevent double spend
+    const result = await this.repository
+      .createQueryBuilder()
+      .update()
+      .set({ balance_minor: () => `balance_minor - ${amountMinor}` })
+      .where('user_id = :userId', { userId })
+      .andWhere('currency = :currency', { currency })
+      .andWhere('balance_minor >= :amountMinor', { amountMinor })
+      .returning('*')
+      .execute();
 
-    wallet.balance_minor = Number(wallet.balance_minor) - amountMinor;
-    await this.repository.save(wallet);
-    return wallet;
+    if (result.affected === 0) {
+      // Either wallet not found or insufficient balance
+      const wallet = await this.repository.findOne({
+        where: { user: { id: userId }, currency },
+      });
+      if (!wallet) return null;
+      throw new Error(
+        `Insufficient balance. Available: ${wallet.balance_minor}, Required: ${amountMinor}`
+      );
+    }
+
+    return result.raw[0];
   }
 }

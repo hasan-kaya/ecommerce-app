@@ -48,11 +48,26 @@ export class ProductRepository {
   }
 
   async decreaseStock(productId: string, quantity: number) {
-    const product = await this.repository.findOne({ where: { id: productId } });
-    if (!product) return null;
+    // Use atomic UPDATE with WHERE condition to prevent race conditions
+    const result = await this.repository
+      .createQueryBuilder()
+      .update()
+      .set({ stock_qty: () => `stock_qty - ${quantity}` })
+      .where('id = :productId', { productId })
+      .andWhere('stock_qty >= :quantity', { quantity })
+      .returning('*')
+      .execute();
 
-    product.stock_qty = product.stock_qty - quantity;
-    return this.repository.save(product);
+    if (result.affected === 0) {
+      // Either product not found or insufficient stock
+      const product = await this.repository.findOne({ where: { id: productId } });
+      if (!product) return null;
+      throw new Error(
+        `Insufficient stock. Available: ${product.stock_qty}, Requested: ${quantity}`
+      );
+    }
+
+    return result.raw[0];
   }
 
   async count() {
