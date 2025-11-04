@@ -1,11 +1,22 @@
 import { AppError } from '@/common/middleware/error';
 import { CategoryRepository } from '@/repositories/CategoryRepository';
+import { CacheService } from '@/services/CacheService';
 
 export class CategoryService {
   private categoryRepository = new CategoryRepository();
+  private cacheService = new CacheService();
+  private readonly CATEGORIES_TTL = 300; // 5 minutes
 
   async getAllCategories() {
-    return this.categoryRepository.findAll();
+    const cacheKey = this.cacheService.getCategoriesKey();
+    const cached = await this.cacheService.get(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
+    const categories = await this.categoryRepository.findAll();
+    await this.cacheService.set(cacheKey, categories, this.CATEGORIES_TTL);
+    return categories;
   }
 
   async getCategories(page: number = 1, pageSize: number = 10) {
@@ -26,7 +37,12 @@ export class CategoryService {
       throw new AppError('Category with this slug already exists', 409);
     }
 
-    return this.categoryRepository.create(data);
+    const category = await this.categoryRepository.create(data);
+
+    // Invalidate categories cache
+    await this.cacheService.del(this.cacheService.getCategoriesKey());
+
+    return category;
   }
 
   async updateCategory(id: string, data: { name: string; slug: string }) {
@@ -44,6 +60,13 @@ export class CategoryService {
     if (!updated) {
       throw new AppError('Failed to update category', 500);
     }
+
+    // Invalidate categories cache and all products in this category
+    await this.cacheService.del(this.cacheService.getCategoriesKey());
+    await this.cacheService.delPattern(
+      this.cacheService.getProductsPatternByCategory(category.slug)
+    );
+
     return updated;
   }
 
@@ -53,6 +76,14 @@ export class CategoryService {
       throw new AppError('Category not found', 404);
     }
 
-    return this.categoryRepository.delete(id);
+    const result = await this.categoryRepository.delete(id);
+
+    // Invalidate categories cache and all products in this category
+    await this.cacheService.del(this.cacheService.getCategoriesKey());
+    await this.cacheService.delPattern(
+      this.cacheService.getProductsPatternByCategory(category.slug)
+    );
+
+    return result;
   }
 }
