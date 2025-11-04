@@ -3,7 +3,7 @@ import { Page, expect } from '@playwright/test';
 /**
  * Top up wallet with specified amount
  */
-export async function topUpWallet(page: Page, amount: string = '100') {
+export async function topUpWallet(page: Page, amount: string = '10000') {
   await page.goto('/wallets');
   await expect(page).toHaveURL('/wallets');
   await page.waitForLoadState('networkidle');

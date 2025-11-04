@@ -1,7 +1,11 @@
 import { test, expect } from '@playwright/test';
 import { loginUser } from './helpers/auth-helper';
-import { browseProductsByCategory, addProductToCart } from './helpers/product-helper';
+import {
+  browseProductsByCategory,
+  addProductToCart,
+} from './helpers/product-helper';
 import { topUpWallet } from './helpers/wallet-helper';
+import { checkoutWithWallet } from './helpers/checkout-helper';
 
 /**
  * E2E Test Suite: Complete User Flow
@@ -47,10 +51,10 @@ test.describe('Complete User Flow', () => {
     });
 
     // ==========================================
-    // STEP 5: Checkout (TODO)
+    // STEP 5: Checkout with wallet
     // ==========================================
-    // await test.step('Checkout with wallet', async () => {
-    //   // TODO: Implement checkout flow
-    // });
+    await test.step('Checkout with wallet', async () => {
+      await checkoutWithWallet(page);
+    });
   });
 });
