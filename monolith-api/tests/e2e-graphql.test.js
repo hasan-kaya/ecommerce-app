@@ -95,7 +95,7 @@ export default function () {
         }
         return false;
       } catch (err) {
-        console.error('Failed to parse wallet response:', r.body.substring(0, 300));
+        console.error('Failed to parse wallet response:', r.body.substring(0, 300), err);
         return false;
       }
     },
@@ -258,11 +258,7 @@ export default function () {
     }
   `;
 
-  const getCartRes = graphqlRequest(
-    getCartQuery,
-    {},
-    { Cookie: `session_token=${sessionToken}` }
-  );
+  const getCartRes = graphqlRequest(getCartQuery, {}, { Cookie: `session_token=${sessionToken}` });
 
   check(getCartRes, {
     'Cart retrieved': (r) => r.status === 200,
@@ -347,7 +343,9 @@ export default function () {
       if (body.data && body.data.wallets[0]) {
         const finalBalance = parseInt(body.data.wallets[0].balanceMinor);
         const expectedBalance = initialBalance + topUpAmount;
-        console.log(`Initial: ${initialBalance / 100} TRY, After topup: ${expectedBalance / 100} TRY, Final: ${finalBalance / 100} TRY`);
+        console.log(
+          `Initial: ${initialBalance / 100} TRY, After topup: ${expectedBalance / 100} TRY, Final: ${finalBalance / 100} TRY`
+        );
         return finalBalance < expectedBalance;
       }
       return false;
