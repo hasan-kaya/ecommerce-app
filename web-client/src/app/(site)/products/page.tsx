@@ -37,7 +37,7 @@ export default async function ProductsPage(props: {
         <aside className="lg:col-span-1">
           <ProductFilters
             searchQuery={searchQuery}
-            categories={categories.map((c) => c.slug)}
+            categories={categories.categories.map((c) => c.slug)}
             selectedCategory={selectedCategory}
           />
         </aside>
