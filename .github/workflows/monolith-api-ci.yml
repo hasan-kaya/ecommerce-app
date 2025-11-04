@@ -2,7 +2,7 @@ name: Monolith API - CI
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, develop, test-ci-workflow]
     paths:
       - 'monolith-api/**'
       - '.github/workflows/monolith-api-ci.yml'
@@ -11,6 +11,7 @@ on:
     paths:
       - 'monolith-api/**'
       - '.github/workflows/monolith-api-ci.yml'
+  workflow_dispatch:
 
 jobs:
   build-and-test:
