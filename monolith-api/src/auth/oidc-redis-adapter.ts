@@ -61,9 +61,7 @@ export class RedisAdapter {
   async upsert(id: string, payload: any, expiresIn: number) {
     const key = this.key(id);
 
-    let expiresAt;
     if (expiresIn) {
-      expiresAt = Math.floor(Date.now() / 1000) + expiresIn;
       await redisClient.setEx(key, expiresIn, JSON.stringify(payload));
     } else {
       await redisClient.set(key, JSON.stringify(payload));

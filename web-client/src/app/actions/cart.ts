@@ -7,12 +7,17 @@ import {
   UPDATE_CART_ITEM_QUANTITY,
   REMOVE_CART_ITEM,
 } from '@/graphql/mutations/cart';
+import {
+  AddToCartResponse,
+  RemoveCartItemResponse,
+  UpdateCartItemQuantityResponse,
+} from '@/graphql/types';
 
 export async function addToCartAction(productId: string, qty: number = 1) {
   try {
     const client = await getClient();
 
-    const result = await client.mutate({
+    const result = await client.mutate<AddToCartResponse>({
       mutation: ADD_TO_CART,
       variables: {
         productId,
@@ -49,7 +54,7 @@ export async function updateCartItemQuantityAction(
   try {
     const client = await getClient();
 
-    const result = await client.mutate({
+    const result = await client.mutate<UpdateCartItemQuantityResponse>({
       mutation: UPDATE_CART_ITEM_QUANTITY,
       variables: {
         cartItemId,
@@ -84,7 +89,7 @@ export async function removeCartItemAction(cartItemId: string) {
   try {
     const client = await getClient();
 
-    const result = await client.mutate({
+    const result = await client.mutate<RemoveCartItemResponse>({
       mutation: REMOVE_CART_ITEM,
       variables: {
         cartItemId,

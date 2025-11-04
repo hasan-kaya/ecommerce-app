@@ -7,11 +7,14 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "type-check": "tsc --noEmit",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:debug": "playwright test --debug",
-    "test:e2e:report": "playwright show-report"
+    "test:e2e:report": "playwright show-report",
+    "prepare": "husky",
+    "semantic-release": "semantic-release"
   },
   "dependencies": {
     "@apollo/client": "^4.0.9",
@@ -24,14 +27,21 @@
     "yup": "^1.7.1"
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
     "@playwright/test": "^1.56.1",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
     "@tailwindcss/postcss": "^4",
     "@types/next-auth": "^3.13.0",
     "@types/node": "20.19.24",
     "@types/react": "19.2.2",
     "@types/react-dom": "^19",
+    "conventional-changelog-conventionalcommits": "^9.1.0",
     "eslint": "^9",
     "eslint-config-next": "16.0.0",
+    "husky": "^9.1.7",
+    "semantic-release": "^24.2.9",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

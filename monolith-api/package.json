@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "main": "app.ts",
   "scripts": {
-    "start": "node app.ts",
+    "start": "node dist/app.js",
     "dev": "nodemon app.ts",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc && tsc-alias",
+    "test": "k6 run tests/e2e-graphql.test.js",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --ext .ts --fix",
     "format": "prettier --write \"**/*.{ts,js,json,md}\"",
@@ -15,7 +16,10 @@
     "migration:create": "npm run typeorm -- migration:create migrations/$npm_config_name",
     "migration:run": "npm run typeorm -- migration:run -d src/config/data-source.ts",
     "migration:revert": "npm run typeorm -- migration:revert -d src/config/data-source.ts",
-    "migration:show": "npm run typeorm -- migration:show -d src/config/data-source.ts"
+    "migration:show": "npm run typeorm -- migration:show -d src/config/data-source.ts",
+    "seed:test": "ts-node scripts/seed-test-data.ts",
+    "prepare": "husky install",
+    "semantic-release": "semantic-release"
   },
   "keywords": [],
   "author": "",
@@ -39,6 +43,10 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.5",
@@ -46,14 +54,18 @@
     "@types/oidc-provider": "^9.5.0",
     "@typescript-eslint/eslint-plugin": "^8.46.2",
     "@typescript-eslint/parser": "^8.46.2",
+    "conventional-changelog-conventionalcommits": "^9.1.0",
     "eslint": "^9.38.0",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-unused-imports": "^4.3.0",
+    "husky": "^9.1.7",
     "nodemon": "^3.1.7",
     "prettier": "^3.6.2",
+    "semantic-release": "^24.2.9",
     "ts-node": "^10.9.2",
+    "tsc-alias": "^1.8.16",
     "typescript": "^5.9.3"
   }
 }
