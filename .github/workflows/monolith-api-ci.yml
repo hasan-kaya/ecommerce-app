@@ -64,14 +64,22 @@ jobs:
       - name: Run migrations
         working-directory: monolith-api
         env:
-          DATABASE_URL: postgresql://app:app@localhost:5432/shop_test
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_USERNAME: app
+          DB_PASSWORD: app
+          DB_NAME: shop_test
           REDIS_URL: redis://localhost:6379
         run: npm run migration:run
 
       - name: Run tests
         working-directory: monolith-api
         env:
-          DATABASE_URL: postgresql://app:app@localhost:5432/shop_test
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_USERNAME: app
+          DB_PASSWORD: app
+          DB_NAME: shop_test
           REDIS_URL: redis://localhost:6379
           NODE_ENV: test
         run: npm test
