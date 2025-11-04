@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "app.ts",
   "scripts": {
-    "start": "node dist/app.js",
+    "start": "node -r tsconfig-paths/register dist/app.js",
     "dev": "nodemon app.ts",
     "build": "tsc",
     "test": "k6 run tests/e2e-graphql.test.js",
