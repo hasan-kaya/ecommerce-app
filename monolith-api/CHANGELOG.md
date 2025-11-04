@@ -1,3 +1,9 @@
+## [1.0.1](https://github.com/hasan-kaya/ecommerce-app/compare/v1.0.0...v1.0.1) (2025-11-04)
+
+### Code Refactoring
+
+* remove legacy CI/CD workflows from monolith API ([e2a0724](https://github.com/hasan-kaya/ecommerce-app/commit/e2a072435b7320951a06aed8cc17096f51a987dc))
+
 ## 1.0.0 (2025-11-04)
 
 ### Features
