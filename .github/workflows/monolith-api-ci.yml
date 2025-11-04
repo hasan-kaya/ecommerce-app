@@ -72,6 +72,17 @@ jobs:
           REDIS_URL: redis://localhost:6379
         run: npm run migration:run
 
+      - name: Seed test data
+        working-directory: monolith-api
+        env:
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_USERNAME: app
+          DB_PASSWORD: app
+          DB_NAME: shop_test
+          REDIS_URL: redis://localhost:6379
+        run: npm run seed:test
+
       - name: Install k6
         run: |
           sudo gpg -k

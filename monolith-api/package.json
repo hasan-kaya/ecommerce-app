@@ -17,7 +17,8 @@
     "migration:run": "npm run typeorm -- migration:run -d src/config/data-source.ts",
     "migration:revert": "npm run typeorm -- migration:revert -d src/config/data-source.ts",
     "migration:show": "npm run typeorm -- migration:show -d src/config/data-source.ts",
-    "prepare": "husky",
+    "seed:test": "ts-node scripts/seed-test-data.ts",
+    "prepare": "husky install",
     "semantic-release": "semantic-release"
   },
   "keywords": [],
